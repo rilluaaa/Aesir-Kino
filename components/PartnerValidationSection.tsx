@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { withBasePath } from "@/lib/base-path";
 import { CountUpMetric } from "@/components/CountUpMetric";
 import { MotionReveal } from "@/components/MotionReveal";
 import { partnerValidation } from "@/lib/content";
@@ -26,7 +27,7 @@ export function PartnerValidationSection() {
               className="object-cover"
               fill
               sizes="(min-width: 1024px) 40vw, 100vw"
-              src="/impact-photos/partner-elderly-outreach.jpg"
+              src={withBasePath("/impact-photos/partner-elderly-outreach.jpg")}
             />
             <div className="absolute inset-0 bg-gradient-to-t from-dark-base/90 via-dark-base/10 to-transparent" />
             <p className="absolute bottom-5 left-5 max-w-xs text-sm font-medium leading-6 text-white/85">

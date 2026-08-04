@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { withBasePath } from "@/lib/base-path";
 import { MotionReveal } from "@/components/MotionReveal";
 import { founderStory } from "@/lib/content";
 
@@ -40,7 +41,7 @@ export function FounderStorySection() {
                 className="object-cover"
                 fill
                 sizes="(min-width: 1024px) 58vw, 100vw"
-                src={founderStory.image}
+                src={withBasePath(founderStory.image)}
               />
               <div className="absolute inset-0 bg-gradient-to-t from-dark-base via-dark-base/20 to-transparent" />
               <div className="absolute bottom-0 left-0 right-0 p-5 md:p-7">

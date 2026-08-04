@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { withBasePath } from "@/lib/base-path";
 import { MotionReveal } from "@/components/MotionReveal";
 import { productAtlasCategories } from "@/lib/content";
 
@@ -79,7 +80,7 @@ export function ProductAtlasSection() {
                         className="object-cover"
                         fill
                         sizes="(min-width: 1280px) 30vw, (min-width: 768px) 50vw, 100vw"
-                        src={image.src}
+                        src={withBasePath(image.src)}
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-dark-base/75 via-transparent to-transparent" />
                       <span className="absolute bottom-4 left-4 text-xs font-bold tracking-[0.18em] text-white/80">

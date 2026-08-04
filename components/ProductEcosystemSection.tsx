@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { withBasePath } from "@/lib/base-path";
 import { MotionReveal } from "@/components/MotionReveal";
 import { productModules } from "@/lib/content";
 
@@ -20,7 +21,7 @@ export function ProductEcosystemSection() {
               <article className="glass-panel overflow-hidden shadow-glass-panel">
                 <div className="relative aspect-[16/10] overflow-hidden">
                   <Image
-                    src={product.image}
+                    src={withBasePath(product.image)}
                     alt={product.imageAlt}
                     fill
                     sizes="(min-width: 1024px) 50vw, 100vw"

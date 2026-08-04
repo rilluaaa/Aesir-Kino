@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { withBasePath } from "@/lib/base-path";
 import { MotionReveal } from "@/components/MotionReveal";
 import { socialInnovation } from "@/lib/content";
 
@@ -50,7 +51,7 @@ export function SocialInnovationSection() {
                   className="object-cover"
                   fill
                   sizes="(min-width: 1024px) 20vw, (min-width: 640px) 45vw, 100vw"
-                  src={image.src}
+                  src={withBasePath(image.src)}
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-dark-base/80 to-transparent" />
                 <span className="absolute bottom-4 left-4 text-xs font-bold tracking-[0.2em] text-white/85">

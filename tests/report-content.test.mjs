@@ -10,6 +10,7 @@ const productAtlasCategoryPath = new URL("../components/ProductAtlasCategorySect
 const partnerValidationPath = new URL("../components/PartnerValidationSection.tsx", import.meta.url);
 const layoutPath = new URL("../app/layout.tsx", import.meta.url);
 const heroPath = new URL("../components/HeroSection.tsx", import.meta.url);
+const fluidHeroPath = new URL("../components/FluidHeroBackground.tsx", import.meta.url);
 const socialInnovationPath = new URL("../components/SocialInnovationSection.tsx", import.meta.url);
 const aiAgentEcosystemPath = new URL("../components/AIAgentEcosystemSection.tsx", import.meta.url);
 const roadmapPath = new URL("../components/RoadmapSection.tsx", import.meta.url);
@@ -123,10 +124,11 @@ test("renders partner validation and roadmap before the final CTA", async () => 
   );
 });
 
-test("removes the rotating hero object and custom cursor", async () => {
-  const [layout, hero, styles] = await Promise.all([
+test("uses an interactive fluid hero without restoring the rotating object or custom cursor", async () => {
+  const [layout, hero, fluidHero, styles] = await Promise.all([
     readFile(layoutPath, "utf8"),
     readFile(heroPath, "utf8"),
+    readFile(fluidHeroPath, "utf8"),
     readFile(globalsPath, "utf8")
   ]);
 
@@ -135,6 +137,15 @@ test("removes the rotating hero object and custom cursor", async () => {
   assert.doesNotMatch(styles, /\.liquid-cursor/);
   assert.doesNotMatch(styles, /cursor:\s*none/);
   assert.match(hero, /hero-static-background/);
+  assert.match(hero, /FluidHeroBackground/);
+  assert.match(hero, /hero-fluid-scrim/);
+  assert.match(hero, /hero-word-reveal/);
+  assert.match(fluidHero, /data-fluid-background/);
+  assert.match(fluidHero, /pointermove/);
+  assert.match(fluidHero, /touchmove/);
+  assert.match(fluidHero, /ORBIT_START_DELAY/);
+  assert.match(fluidHero, /IntersectionObserver/);
+  assert.match(fluidHero, /prefers-reduced-motion/);
 });
 
 test("keeps report sections connected without outer divider lines", async () => {

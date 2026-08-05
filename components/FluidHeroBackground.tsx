@@ -3,11 +3,11 @@
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
 
-const MAX_SPLATS = 16;
+const MAX_SPLATS = 12;
 const CLOUD_COUNT = 2;
-const CLOUD_LOBE_COUNT = 6;
 const CLOUD_PHASE_OFFSET = Math.PI;
 const CLOUD_ORBIT_SPEED = 0.014;
+const CLOUD_TRAIL_DISSIPATION = 0.946;
 
 type Splat = {
   color: THREE.Color;
@@ -70,7 +70,7 @@ const simulationShader = `
 
     vec2 sampleUv = clamp(vUv - flow, vec2(0.001), vec2(0.999));
     vec3 colour = texture2D(uPrevious, sampleUv).rgb;
-    colour *= pow(0.958, max(uDelta, 0.001) * 60.0);
+    colour *= pow(${CLOUD_TRAIL_DISSIPATION}, max(uDelta, 0.001) * 60.0);
 
     for (int index = 0; index < ${MAX_SPLATS}; index++) {
       if (index < uSplatCount) {
@@ -78,22 +78,7 @@ const simulationShader = `
         offset.x *= uAspect;
         vec2 direction = normalize(uSplatForce[index] + vec2(0.0001));
         offset -= direction * dot(offset, direction) * 0.28;
-        vec2 turbulentOffset = offset + vec2(
-          sin(offset.y * 118.0 + uTime * 0.72 + float(index) * 1.7),
-          cos(offset.x * 106.0 - uTime * 0.58 + float(index) * 1.3)
-        ) * 0.0068;
-        float edgeRipple =
-          0.74 +
-          0.2 * sin(
-            (turbulentOffset.x + turbulentOffset.y) * 146.0 +
-            uTime * 0.64 +
-            float(index) * 2.1
-          ) +
-          0.12 * sin(turbulentOffset.x * 232.0 - turbulentOffset.y * 174.0);
-        float ink = exp(
-          -dot(turbulentOffset, turbulentOffset) /
-          max(uSplatRadius[index] * edgeRipple, 0.0001)
-        );
+        float ink = exp(-dot(offset, offset) / max(uSplatRadius[index], 0.0001));
         colour += uSplatColor[index] * ink * uSplatStrength[index];
       }
     }
@@ -119,9 +104,9 @@ const displayShader = `
     float dy = length(top) - length(bottom);
     vec3 normal = normalize(vec3(dx, dy, max(length(uTexel), 0.001)));
     colour *= clamp(dot(normal, normalize(vec3(-0.25, 0.35, 1.0))) + 0.82, 0.7, 1.16);
-    colour = vec3(1.0) - exp(-colour * 0.82);
+    colour = vec3(1.0) - exp(-colour * 0.62);
     float luminance = dot(colour, vec3(0.2126, 0.7152, 0.0722));
-    colour = clamp(mix(vec3(luminance), colour, 1.34), 0.0, 1.0);
+    colour = clamp(mix(vec3(luminance), colour, 1.28), 0.0, 1.0);
     colour = pow(colour, vec3(0.9));
     float vignette = smoothstep(0.92, 0.18, length(vUv - 0.5));
     colour *= mix(0.68, 1.0, vignette);
@@ -241,6 +226,7 @@ export function FluidHeroBackground() {
       () => new THREE.Vector2(0.5, 0.5)
     );
     const orbitSeeded = Array.from({ length: CLOUD_COUNT }, () => false);
+    let cloudFrame = 0;
     let reducedMotionFrames = 100;
     const splatQueue: Splat[] = [];
 
@@ -344,6 +330,8 @@ export function FluidHeroBackground() {
       const radiusX = radiusPixels / canvasWidth;
       const radiusY = radiusPixels / canvasHeight;
       orbitAngle += CLOUD_ORBIT_SPEED;
+      cloudFrame += 1;
+
       for (let cloudIndex = 0; cloudIndex < CLOUD_COUNT; cloudIndex += 1) {
         const phase = orbitAngle + cloudIndex * CLOUD_PHASE_OFFSET;
         const breathing = 0.9 + 0.1 * Math.sin(elapsed * 0.58 + cloudIndex * Math.PI);
@@ -360,52 +348,33 @@ export function FluidHeroBackground() {
 
         const force = point.clone().sub(previousOrbits[cloudIndex]).multiplyScalar(1500);
         previousOrbits[cloudIndex].copy(point);
-        const cloudSpreadPixels = Math.min(
-          190,
-          Math.max(86, Math.min(canvasWidth, canvasHeight) * 0.24)
+        const mistOffset = new THREE.Vector2(
+          Math.cos(phase * 1.63 + cloudIndex) * 0.019,
+          Math.sin(phase * 1.41 + cloudIndex) * 0.019
         );
 
-        for (let lobeIndex = 0; lobeIndex < CLOUD_LOBE_COUNT; lobeIndex += 1) {
-          const lobeProgress = lobeIndex / (CLOUD_LOBE_COUNT - 1);
-          const lobePhase =
-            elapsed * (0.34 + lobeProgress * 0.16) +
-            cloudIndex * 2.4 +
-            lobeIndex * 1.91;
-          const trailPixels =
-            10 - lobeProgress * cloudSpreadPixels + Math.sin(lobePhase) * 11;
-          const crossPixels =
-            Math.sin(lobeIndex * 2.31 + elapsed * 0.38 + cloudIndex * 1.7) *
-            cloudSpreadPixels *
-            (0.34 + lobeProgress * 0.26);
-          const lobePoint = new THREE.Vector2(
-            point.x +
-              (-Math.sin(phase) * trailPixels + Math.cos(phase) * crossPixels) /
-                canvasWidth,
-            point.y +
-              (-Math.cos(phase) * trailPixels - Math.sin(phase) * crossPixels) /
-                canvasHeight
-          );
-          const isCoolAccent = lobeIndex === 2;
-          const radius =
-            0.0012 +
-            (0.5 + 0.5 * Math.cos(lobePhase * 1.17)) * 0.0013 +
-            (1 - lobeProgress) * 0.0006;
-          const strength =
-            (isCoolAccent ? 0.14 : 0.17) *
-            (1 - lobeProgress * 0.35) *
-            (0.86 + 0.14 * Math.sin(lobePhase * 0.83)) *
-            entrance;
+        splatQueue.push({
+          color: createCloudColour(cloudIndex, elapsed),
+          force,
+          point,
+          radius: 0.0062,
+          strength: 0.26 * entrance
+        });
+        splatQueue.push({
+          color: createCloudColour(cloudIndex, elapsed + 0.8),
+          force: force.clone().multiplyScalar(0.72),
+          point: point.clone().add(mistOffset),
+          radius: 0.013,
+          strength: 0.11 * entrance
+        });
 
+        if (cloudFrame % 3 === cloudIndex) {
           splatQueue.push({
-            color: createCloudColour(
-              cloudIndex,
-              elapsed + lobeIndex * 0.21,
-              isCoolAccent
-            ),
-            force: force.clone().multiplyScalar(0.46 + (1 - lobeProgress) * 0.22),
-            point: lobePoint,
-            radius,
-            strength
+            color: createCloudColour(cloudIndex, elapsed, true),
+            force: force.clone().multiplyScalar(0.86),
+            point: point.clone().sub(mistOffset.clone().multiplyScalar(0.65)),
+            radius: 0.0044,
+            strength: 0.14 * entrance
           });
         }
       }
@@ -515,7 +484,7 @@ export function FluidHeroBackground() {
       aria-hidden="true"
       className="hero-fluid-canvas pointer-events-none absolute inset-0 z-0 h-full w-full"
       data-cloud-count="2"
-      data-cloud-lobes="6"
+      data-cloud-style="twin-thick-trails"
       data-fluid-background="true"
       ref={canvasRef}
     />

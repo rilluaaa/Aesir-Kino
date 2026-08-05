@@ -115,22 +115,25 @@ const displayShader = `
 `;
 
 function createInteractionColour() {
-  const usesCoolAccent = Math.random() < 0.2;
-  const hue = usesCoolAccent
-    ? 0.53 + Math.random() * 0.1
-    : 0.78 + Math.random() * 0.16;
-  return new THREE.Color().setHSL(hue, 0.98, 0.53);
+  const usesWhiteHighlight = Math.random() < 0.28;
+  if (usesWhiteHighlight) {
+    return new THREE.Color().setHSL(0.55, 0.42, 0.88);
+  }
+
+  return new THREE.Color().setHSL(0.52 + Math.random() * 0.1, 0.96, 0.58);
 }
 
 function createCloudColour(cloudIndex: number, elapsedSeconds: number, accent = false) {
   if (accent) {
-    const hue = cloudIndex === 0 ? 0.54 : 0.62;
-    return new THREE.Color().setHSL(hue, 0.98, 0.52);
+    const hue = cloudIndex === 0 ? 0.53 : 0.58;
+    const saturation = cloudIndex === 0 ? 0.38 : 0.58;
+    const lightness = cloudIndex === 0 ? 0.9 : 0.82;
+    return new THREE.Color().setHSL(hue, saturation, lightness);
   }
 
-  const baseHue = cloudIndex === 0 ? 0.82 : 0.91;
-  const hueDrift = Math.sin(elapsedSeconds * 0.52 + cloudIndex * 1.7) * 0.025;
-  return new THREE.Color().setHSL(baseHue + hueDrift, 0.99, 0.52);
+  const baseHue = cloudIndex === 0 ? 0.53 : 0.61;
+  const hueDrift = Math.sin(elapsedSeconds * 0.52 + cloudIndex * 1.7) * 0.018;
+  return new THREE.Color().setHSL(baseHue + hueDrift, 0.94, 0.58);
 }
 
 export function FluidHeroBackground() {
@@ -484,6 +487,7 @@ export function FluidHeroBackground() {
       aria-hidden="true"
       className="hero-fluid-canvas pointer-events-none absolute inset-0 z-0 h-full w-full"
       data-cloud-count="2"
+      data-cloud-palette="ice-blue-white"
       data-cloud-style="twin-thick-trails"
       data-fluid-background="true"
       ref={canvasRef}

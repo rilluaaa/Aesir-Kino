@@ -149,6 +149,7 @@ test("uses an interactive fluid hero without restoring the rotating object or cu
   assert.match(fluidHero, /addOrbitClouds/);
   assert.match(fluidHero, /0\.5 - Math\.sin\(phase\)/);
   assert.match(fluidHero, /data-cloud-count="2"/);
+  assert.match(fluidHero, /data-cloud-palette="ice-blue-white"/);
   assert.match(fluidHero, /data-cloud-style="twin-thick-trails"/);
   assert.match(fluidHero, /radius: 0\.0062/);
   assert.match(fluidHero, /radius: 0\.013/);

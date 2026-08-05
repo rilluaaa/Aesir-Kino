@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { LiquidCursor } from "@/components/LiquidCursor";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -15,10 +14,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body>
-        {children}
-        <LiquidCursor />
-      </body>
+      <body>{children}</body>
     </html>
   );
 }

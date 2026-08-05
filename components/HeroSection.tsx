@@ -1,10 +1,8 @@
-import { Hero3DCanvas } from "@/components/Hero3DCanvas";
 import { MotionReveal } from "@/components/MotionReveal";
 
 export function HeroSection() {
   return (
     <section className="relative flex h-screen min-h-[760px] items-center justify-center overflow-hidden px-6">
-      <Hero3DCanvas />
       <div className="relative z-10 mx-auto grid max-w-6xl gap-10 text-center">
         <MotionReveal immediate>
           <p className="mx-auto w-fit border border-white/10 bg-white/[0.03] px-4 py-2 text-xs font-bold uppercase tracking-[0.32em] text-accent-neon-cyan backdrop-blur-md">

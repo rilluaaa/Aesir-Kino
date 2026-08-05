@@ -10,6 +10,9 @@ const productAtlasCategoryPath = new URL("../components/ProductAtlasCategorySect
 const partnerValidationPath = new URL("../components/PartnerValidationSection.tsx", import.meta.url);
 const layoutPath = new URL("../app/layout.tsx", import.meta.url);
 const heroPath = new URL("../components/HeroSection.tsx", import.meta.url);
+const socialInnovationPath = new URL("../components/SocialInnovationSection.tsx", import.meta.url);
+const aiAgentEcosystemPath = new URL("../components/AIAgentEcosystemSection.tsx", import.meta.url);
+const roadmapPath = new URL("../components/RoadmapSection.tsx", import.meta.url);
 const globalsPath = new URL("../app/globals.css", import.meta.url);
 const chapterDeckPath = new URL("../components/ChapterDeck.tsx", import.meta.url);
 
@@ -131,6 +134,20 @@ test("removes the rotating hero object and custom cursor", async () => {
   assert.doesNotMatch(hero, /Hero3DCanvas/);
   assert.doesNotMatch(styles, /\.liquid-cursor/);
   assert.doesNotMatch(styles, /cursor:\s*none/);
+  assert.match(hero, /hero-static-background/);
+});
+
+test("keeps report sections connected without outer divider lines", async () => {
+  const sources = await Promise.all(
+    [socialInnovationPath, aiAgentEcosystemPath, roadmapPath].map((path) =>
+      readFile(path, "utf8")
+    )
+  );
+
+  for (const source of sources) {
+    const sectionOpeningTag = source.match(/<section[\s\S]*?>/)?.[0] ?? "";
+    assert.doesNotMatch(sectionOpeningTag, /border-y/);
+  }
 });
 
 test("renders the report as one continuous page with chapter navigation", async () => {

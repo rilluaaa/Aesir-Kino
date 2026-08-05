@@ -6,7 +6,7 @@ import { socialInnovation } from "@/lib/content";
 export function SocialInnovationSection() {
   return (
     <section
-      className="relative overflow-hidden border-y border-white/8 bg-black/20 px-6 py-28 md:py-36"
+      className="relative overflow-hidden bg-black/20 px-6 py-28 md:py-36"
       id="social-innovation"
     >
       <div className="pointer-events-none absolute inset-0 bg-hero-radial opacity-45" />

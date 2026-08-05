@@ -4,13 +4,15 @@ import { useEffect, useRef } from "react";
 import * as THREE from "three";
 
 const MAX_SPLATS = 12;
-const ORBIT_START_DELAY = 700;
-const ORBIT_SPEED = 0.026;
+const CLOUD_COUNT = 2;
+const CLOUD_PHASE_OFFSET = Math.PI;
+const CLOUD_ORBIT_SPEED = 0.014;
 
 type Splat = {
   color: THREE.Color;
   force: THREE.Vector2;
   point: THREE.Vector2;
+  radius: number;
   strength: number;
 };
 
@@ -36,6 +38,7 @@ const simulationShader = `
   uniform vec2 uSplatPoint[${MAX_SPLATS}];
   uniform vec2 uSplatForce[${MAX_SPLATS}];
   uniform vec3 uSplatColor[${MAX_SPLATS}];
+  uniform float uSplatRadius[${MAX_SPLATS}];
   uniform float uSplatStrength[${MAX_SPLATS}];
 
   void main() {
@@ -54,7 +57,8 @@ const simulationShader = `
         vec2 offset = vUv - uSplatPoint[index];
         offset.x *= uAspect;
         float distanceSquared = dot(offset, offset);
-        float influence = exp(-distanceSquared / 0.032);
+        float radius = max(uSplatRadius[index], 0.0001);
+        float influence = exp(-distanceSquared / (radius * 7.5));
         vec2 tangent = vec2(-offset.y, offset.x);
         vec2 directional = normalize(uSplatForce[index] + vec2(0.0001));
         float force = min(length(uSplatForce[index]) * 0.012, 1.0);
@@ -73,7 +77,7 @@ const simulationShader = `
         offset.x *= uAspect;
         vec2 direction = normalize(uSplatForce[index] + vec2(0.0001));
         offset -= direction * dot(offset, direction) * 0.28;
-        float ink = exp(-dot(offset, offset) / 0.0022);
+        float ink = exp(-dot(offset, offset) / max(uSplatRadius[index], 0.0001));
         colour += uSplatColor[index] * ink * uSplatStrength[index];
       }
     }
@@ -99,24 +103,33 @@ const displayShader = `
     float dy = length(top) - length(bottom);
     vec3 normal = normalize(vec3(dx, dy, max(length(uTexel), 0.001)));
     colour *= clamp(dot(normal, normalize(vec3(-0.25, 0.35, 1.0))) + 0.82, 0.7, 1.16);
-    colour = vec3(1.0) - exp(-colour * 1.2);
+    colour = vec3(1.0) - exp(-colour * 0.62);
+    float luminance = dot(colour, vec3(0.2126, 0.7152, 0.0722));
+    colour = clamp(mix(vec3(luminance), colour, 1.28), 0.0, 1.0);
+    colour = pow(colour, vec3(0.9));
     float vignette = smoothstep(0.92, 0.18, length(vUv - 0.5));
     colour *= mix(0.68, 1.0, vignette);
     gl_FragColor = vec4(colour, 1.0);
   }
 `;
 
-function createColour() {
-  return new THREE.Color().setHSL(0.5 + Math.random() * 0.42, 0.95, 0.56);
+function createInteractionColour() {
+  const usesCoolAccent = Math.random() < 0.2;
+  const hue = usesCoolAccent
+    ? 0.53 + Math.random() * 0.1
+    : 0.78 + Math.random() * 0.16;
+  return new THREE.Color().setHSL(hue, 0.98, 0.53);
 }
 
-function createRandomSplat(): Splat {
-  return {
-    color: createColour(),
-    force: new THREE.Vector2((Math.random() - 0.5) * 110, (Math.random() - 0.5) * 110),
-    point: new THREE.Vector2(Math.random(), Math.random()),
-    strength: 1.8 + Math.random() * 1.8
-  };
+function createCloudColour(cloudIndex: number, elapsedSeconds: number, accent = false) {
+  if (accent) {
+    const hue = cloudIndex === 0 ? 0.54 : 0.62;
+    return new THREE.Color().setHSL(hue, 0.98, 0.52);
+  }
+
+  const baseHue = cloudIndex === 0 ? 0.82 : 0.91;
+  const hueDrift = Math.sin(elapsedSeconds * 0.52 + cloudIndex * 1.7) * 0.025;
+  return new THREE.Color().setHSL(baseHue + hueDrift, 0.99, 0.52);
 }
 
 export function FluidHeroBackground() {
@@ -150,6 +163,7 @@ export function FluidHeroBackground() {
     const zeroPoints = Array.from({ length: MAX_SPLATS }, () => new THREE.Vector2());
     const zeroForces = Array.from({ length: MAX_SPLATS }, () => new THREE.Vector2());
     const zeroColours = Array.from({ length: MAX_SPLATS }, () => new THREE.Color());
+    const zeroRadii = Array.from({ length: MAX_SPLATS }, () => 0);
     const zeroStrengths = Array.from({ length: MAX_SPLATS }, () => 0);
 
     const simulationUniforms = {
@@ -162,6 +176,7 @@ export function FluidHeroBackground() {
       uSplatPoint: { value: zeroPoints },
       uSplatForce: { value: zeroForces },
       uSplatColor: { value: zeroColours },
+      uSplatRadius: { value: zeroRadii },
       uSplatStrength: { value: zeroStrengths }
     };
     const simulationMaterial = new THREE.ShaderMaterial({
@@ -205,16 +220,14 @@ export function FluidHeroBackground() {
     let lastFrameTime = performance.now();
     const startedAt = lastFrameTime;
     let orbitAngle = 0;
-    let previousOrbit = new THREE.Vector2(0.5, 0.5);
-    let orbitSeeded = false;
+    const previousOrbits = Array.from(
+      { length: CLOUD_COUNT },
+      () => new THREE.Vector2(0.5, 0.5)
+    );
+    const orbitSeeded = Array.from({ length: CLOUD_COUNT }, () => false);
+    let cloudFrame = 0;
     let reducedMotionFrames = 100;
     const splatQueue: Splat[] = [];
-
-    for (let index = 0; index < 34; index += 1) splatQueue.push(createRandomSplat());
-    for (let wave = 0; wave < 8; wave += 1) {
-      const waveSize = 10 + Math.floor(Math.random() * 10);
-      for (let index = 0; index < waveSize; index += 1) splatQueue.push(createRandomSplat());
-    }
 
     function clearTargets() {
       const previousColour = renderer.getClearColor(new THREE.Color());
@@ -267,13 +280,14 @@ export function FluidHeroBackground() {
       }
 
       splatQueue.push({
-        color: createColour(),
+        color: createInteractionColour(),
         force: new THREE.Vector2(movementX * 5, -movementY * 5),
         point: new THREE.Vector2(
           (clientX - rect.left) / rect.width,
           1 - (clientY - rect.top) / rect.height
         ),
-        strength: 2.2
+        radius: 0.0026,
+        strength: 0.72
       });
 
       if (reducedMotion) {
@@ -306,28 +320,63 @@ export function FluidHeroBackground() {
       previousTouch = null;
     };
 
-    function addOrbitSplat(now: number) {
-      if (reducedMotion || now - startedAt < ORBIT_START_DELAY) return;
+    function addOrbitClouds(now: number) {
+      if (reducedMotion) return;
 
-      const radiusPixels = Math.min(300, canvasWidth * 0.35, canvasHeight * 0.35);
+      const elapsed = (now - startedAt) / 1000;
+      const entrance = 1 - Math.exp(-elapsed * 1.8);
+      const radiusPixels = Math.min(340, canvasWidth * 0.35, canvasHeight * 0.35);
       const radiusX = radiusPixels / canvasWidth;
       const radiusY = radiusPixels / canvasHeight;
-      const breathing = 0.72 + 0.28 * Math.sin(orbitAngle * 0.37);
-      orbitAngle += ORBIT_SPEED;
-      const point = new THREE.Vector2(
-        0.5 + Math.cos(orbitAngle) * radiusX * breathing,
-        0.5 + Math.sin(orbitAngle) * radiusY * breathing
-      );
+      orbitAngle += CLOUD_ORBIT_SPEED;
+      cloudFrame += 1;
 
-      if (!orbitSeeded) {
-        orbitSeeded = true;
-        previousOrbit = point;
-        return;
+      for (let cloudIndex = 0; cloudIndex < CLOUD_COUNT; cloudIndex += 1) {
+        const phase = orbitAngle + cloudIndex * CLOUD_PHASE_OFFSET;
+        const breathing = 0.9 + 0.1 * Math.sin(elapsed * 0.58 + cloudIndex * Math.PI);
+        const point = new THREE.Vector2(
+          0.5 + Math.cos(phase) * radiusX * breathing,
+          0.5 - Math.sin(phase) * radiusY * breathing
+        );
+
+        if (!orbitSeeded[cloudIndex]) {
+          orbitSeeded[cloudIndex] = true;
+          previousOrbits[cloudIndex].copy(point);
+          continue;
+        }
+
+        const force = point.clone().sub(previousOrbits[cloudIndex]).multiplyScalar(1500);
+        previousOrbits[cloudIndex].copy(point);
+        const mistOffset = new THREE.Vector2(
+          Math.cos(phase * 1.63 + cloudIndex) * 0.014,
+          Math.sin(phase * 1.41 + cloudIndex) * 0.014
+        );
+
+        splatQueue.push({
+          color: createCloudColour(cloudIndex, elapsed),
+          force,
+          point,
+          radius: 0.0038,
+          strength: 0.28 * entrance
+        });
+        splatQueue.push({
+          color: createCloudColour(cloudIndex, elapsed + 0.8),
+          force: force.clone().multiplyScalar(0.72),
+          point: point.clone().add(mistOffset),
+          radius: 0.0085,
+          strength: 0.1 * entrance
+        });
+
+        if (cloudFrame % 3 === cloudIndex) {
+          splatQueue.push({
+            color: createCloudColour(cloudIndex, elapsed, true),
+            force: force.clone().multiplyScalar(0.86),
+            point: point.clone().sub(mistOffset.clone().multiplyScalar(0.65)),
+            radius: 0.0028,
+            strength: 0.16 * entrance
+          });
+        }
       }
-
-      const force = point.clone().sub(previousOrbit).multiplyScalar(1200);
-      previousOrbit = point;
-      splatQueue.push({ color: createColour(), force, point, strength: 1.35 });
     }
 
     function scheduleFrame() {
@@ -341,7 +390,7 @@ export function FluidHeroBackground() {
       if (isDestroyed || !isVisible || document.hidden) return;
 
       resize();
-      addOrbitSplat(now);
+      addOrbitClouds(now);
       const splats = splatQueue.splice(0, MAX_SPLATS);
       const delta = Math.min((now - lastFrameTime) / 1000, 0.034);
       lastFrameTime = now;
@@ -357,11 +406,13 @@ export function FluidHeroBackground() {
           zeroPoints[index].copy(splat.point);
           zeroForces[index].copy(splat.force);
           zeroColours[index].copy(splat.color);
+          zeroRadii[index] = splat.radius;
           zeroStrengths[index] = splat.strength;
         } else {
           zeroPoints[index].set(0, 0);
           zeroForces[index].set(0, 0);
           zeroColours[index].setRGB(0, 0, 0);
+          zeroRadii[index] = 0;
           zeroStrengths[index] = 0;
         }
       }
@@ -431,6 +482,7 @@ export function FluidHeroBackground() {
     <canvas
       aria-hidden="true"
       className="hero-fluid-canvas pointer-events-none absolute inset-0 z-0 h-full w-full"
+      data-cloud-count="2"
       data-fluid-background="true"
       ref={canvasRef}
     />

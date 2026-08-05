@@ -204,7 +204,7 @@ const flowWaveVertexShader = `
     float stream = uTime * 1.65;
     float wave = snoise(vec3(point.x * 0.14, (point.z + stream) * 0.11, uTime * 0.1)) * 1.6;
     wave += snoise(vec3(point.x * 0.28, (point.z + stream) * 0.22, uTime * 0.19)) * 0.62;
-    point.y = wave * (1.0 + uScroll * 0.28) - 1.02;
+    point.y = wave * (1.0 + uScroll * 0.34) - 0.55;
 
     vec2 pointerPosition = vec2(
       uPointer.x * 8.5,
@@ -221,10 +221,10 @@ const flowWaveVertexShader = `
     float farFade = smoothstep(-31.0, -24.0, point.z);
     float nearFade = 1.0 - smoothstep(1.8, 4.0, point.z);
     vColour = mix(uColourLow, uColourHigh, heightMix);
-    vAlpha = (0.22 + heightMix * 0.55) * edgeFade * farFade * nearFade * uAppear;
+    vAlpha = (0.34 + heightMix * 0.66) * edgeFade * farFade * nearFade * uAppear;
 
     vec4 modelViewPosition = modelViewMatrix * vec4(point, 1.0);
-    gl_PointSize = (2.6 + heightMix * 4.4) * uPixelRatio * (9.0 / max(-modelViewPosition.z, 2.0));
+    gl_PointSize = (3.4 + heightMix * 5.8) * uPixelRatio * (9.0 / max(-modelViewPosition.z, 2.0));
     gl_PointSize = max(gl_PointSize, 1.0);
     gl_Position = projectionMatrix * modelViewPosition;
   }
@@ -241,7 +241,7 @@ const flowWaveFragmentShader = `
     float distanceFromCentre = length(point);
     if (distanceFromCentre > 0.5) discard;
     float glow = smoothstep(0.5, 0.02, distanceFromCentre);
-    gl_FragColor = vec4(vColour * glow, vAlpha * glow);
+    gl_FragColor = vec4(vColour * glow * 1.18, vAlpha * glow);
   }
 `;
 
@@ -358,8 +358,8 @@ export function FluidHeroBackground() {
     const flowWaveGeometry = createFlowWaveGeometry();
     const flowWaveUniforms = {
       uAppear: { value: 0 },
-      uColourHigh: { value: new THREE.Color("#f0fdff") },
-      uColourLow: { value: new THREE.Color("#0d6ea6") },
+      uColourHigh: { value: new THREE.Color("#f6feff") },
+      uColourLow: { value: new THREE.Color("#147fb9") },
       uPixelRatio: { value: Math.min(window.devicePixelRatio, 1.5) },
       uPointer: { value: new THREE.Vector2() },
       uPointerActivity: { value: 0 },
@@ -604,13 +604,13 @@ export function FluidHeroBackground() {
       flowWaveUniforms.uTime.value = reducedMotion ? 0.8 : elapsed;
       flowWaveCamera.position.set(
         wavePointer.x * 0.52,
-        5.15 - scrollEase * 1.8 + wavePointer.y * 0.18,
+        4.35 - scrollEase * 1.5 + wavePointer.y * 0.18,
         10.5 - scrollEase * 2.5
       );
       flowWaveCamera.lookAt(
         wavePointer.x * 0.26,
-        -0.35 + scrollEase * 0.35,
-        -9.5 - scrollEase * 4
+        -0.05 + scrollEase * 0.35,
+        -8.5 - scrollEase * 4
       );
 
       for (let index = 0; index < MAX_SPLATS; index += 1) {
@@ -706,6 +706,7 @@ export function FluidHeroBackground() {
       data-cloud-style="twin-thick-trails"
       data-flow-wave-points={FLOW_WAVE_POINT_COUNT}
       data-flow-wave="optimized"
+      data-flow-wave-visibility="bold"
       data-fluid-background="true"
       data-renderer-count="1"
       ref={canvasRef}

@@ -3,7 +3,7 @@ import { roadmapItems } from "@/lib/content";
 
 export function RoadmapSection() {
   return (
-    <section className="relative overflow-hidden bg-black/20 px-6 py-28 md:py-36" id="roadmap">
+    <section className="relative overflow-hidden px-6 py-28 md:py-36" id="roadmap">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_55%_0%,rgba(0,242,254,0.12),transparent_36%),radial-gradient(circle_at_15%_100%,rgba(138,43,226,0.13),transparent_34%)]" />
       <div className="relative mx-auto max-w-7xl">
         <MotionReveal className="grid gap-7 lg:grid-cols-12 lg:items-end">

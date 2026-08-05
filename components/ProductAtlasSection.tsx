@@ -20,7 +20,7 @@ const categoryImages = [
 
 export function ProductAtlasSection() {
   return (
-    <section className="relative overflow-hidden border-y border-white/8 bg-black/20 px-6 py-28 md:py-36" id="product-atlas">
+    <section className="relative overflow-hidden px-6 py-28 md:py-36" id="product-atlas">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_8%_8%,rgba(138,43,226,0.12),transparent_25%),radial-gradient(circle_at_94%_65%,rgba(0,242,254,0.1),transparent_28%)]" />
       <div className="relative mx-auto max-w-7xl">
         <MotionReveal className="max-w-5xl">

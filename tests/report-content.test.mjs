@@ -169,7 +169,7 @@ test("uses an interactive fluid hero without restoring the rotating object or cu
 
 test("keeps report sections connected without outer divider lines", async () => {
   const sources = await Promise.all(
-    [socialInnovationPath, aiAgentEcosystemPath, roadmapPath].map((path) =>
+    [socialInnovationPath, aiAgentEcosystemPath, roadmapPath, productAtlasPath].map((path) =>
       readFile(path, "utf8")
     )
   );
@@ -177,6 +177,7 @@ test("keeps report sections connected without outer divider lines", async () => 
   for (const source of sources) {
     const sectionOpeningTag = source.match(/<section[\s\S]*?>/)?.[0] ?? "";
     assert.doesNotMatch(sectionOpeningTag, /border-y/);
+    assert.doesNotMatch(sectionOpeningTag, /bg-black\/20/);
   }
 });
 
@@ -190,6 +191,7 @@ test("renders the report as one continuous page with chapter navigation", async 
   assert.match(deck, /IntersectionObserver/);
   assert.match(deck, /chapters\.map/);
   assert.match(deck, /chapter-deck__flow/);
+  assert.match(deck, /data-section-continuity="gradient"/);
   assert.match(deck, /chapter-deck__chapter/);
   assert.match(deck, /href=\{`#\$\{chapter\.id\}`\}/);
   assert.match(deck, /aria-current/);
@@ -201,6 +203,8 @@ test("renders the report as one continuous page with chapter navigation", async 
   const styles = await readFile(globalsPath, "utf8");
   assert.match(styles, /\.chapter-deck\s*\{[\s\S]*?min-height:\s*100vh;/);
   assert.match(styles, /\.chapter-deck__chapter\s*\{[\s\S]*?scroll-margin-top:\s*0;/);
+  assert.match(styles, /\.chapter-deck__flow\s*\{[\s\S]*?linear-gradient\(/);
+  assert.match(styles, /\.chapter-deck__chapter:not\(:last-child\)::after/);
   assert.doesNotMatch(styles, /overflow-y:\s*hidden/);
 });
 

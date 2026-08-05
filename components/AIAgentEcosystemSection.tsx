@@ -10,7 +10,7 @@ const foundations = [
 export function AIAgentEcosystemSection() {
   return (
     <section
-      className="relative overflow-hidden bg-black/20 px-6 py-28 md:py-36"
+      className="relative overflow-hidden px-6 py-28 md:py-36"
       id="ai-ecosystem"
     >
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_76%_18%,rgba(0,242,254,0.14),transparent_30%),radial-gradient(circle_at_20%_84%,rgba(138,43,226,0.14),transparent_32%)]" />

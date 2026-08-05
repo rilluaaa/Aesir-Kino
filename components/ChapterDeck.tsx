@@ -68,7 +68,7 @@ export function ChapterDeck({ chapters }: ChapterDeckProps) {
         ))}
       </nav>
 
-      <div className="chapter-deck__flow">
+      <div className="chapter-deck__flow" data-section-continuity="gradient">
         {chapters.map((chapter) => (
           <div className="chapter-deck__chapter" id={chapter.id} key={chapter.id}>
             {chapter.content}

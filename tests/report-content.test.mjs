@@ -151,6 +151,12 @@ test("uses an interactive fluid hero without restoring the rotating object or cu
   assert.match(fluidHero, /data-cloud-count="2"/);
   assert.match(fluidHero, /data-cloud-palette="ice-blue-white"/);
   assert.match(fluidHero, /data-cloud-style="twin-thick-trails"/);
+  assert.match(fluidHero, /FLOW_WAVE_POINT_COUNT = FLOW_WAVE_COLUMNS \* FLOW_WAVE_ROWS/);
+  assert.match(fluidHero, /new THREE\.Points/);
+  assert.match(fluidHero, /THREE\.AdditiveBlending/);
+  assert.match(fluidHero, /data-flow-wave="optimized"/);
+  assert.match(fluidHero, /data-renderer-count="1"/);
+  assert.doesNotMatch(fluidHero, /UnrealBloomPass/);
   assert.match(fluidHero, /radius: 0\.0062/);
   assert.match(fluidHero, /radius: 0\.013/);
   assert.doesNotMatch(fluidHero, /createRandomSplat/);

@@ -76,21 +76,15 @@ body {
 .chapter-deck__flow {
   position: relative;
   isolation: isolate;
-  background:
-    radial-gradient(ellipse 56% 10% at 10% 14%, rgba(0, 242, 254, 0.075), transparent 72%),
-    radial-gradient(ellipse 58% 11% at 90% 29%, rgba(138, 43, 226, 0.08), transparent 74%),
-    radial-gradient(ellipse 62% 12% at 15% 48%, rgba(0, 242, 254, 0.06), transparent 75%),
-    radial-gradient(ellipse 58% 10% at 86% 68%, rgba(138, 43, 226, 0.07), transparent 74%),
-    radial-gradient(ellipse 64% 11% at 18% 88%, rgba(0, 242, 254, 0.055), transparent 76%),
-    linear-gradient(
-      180deg,
-      #060711 0%,
-      #0a0d16 18%,
-      #0d0d15 36%,
-      #091019 55%,
-      #0d0b15 74%,
-      #090b12 100%
-    );
+  background: linear-gradient(
+    180deg,
+    #060711 0%,
+    #0a0d16 18%,
+    #0d0d15 36%,
+    #091019 55%,
+    #0d0b15 74%,
+    #090b12 100%
+  );
 }
 
 .chapter-deck__chapter {
@@ -123,12 +117,21 @@ body {
   height: clamp(9rem, 16vw, 16rem);
   content: "";
   pointer-events: none;
-  background: radial-gradient(
-    ellipse 72% 58% at 50% 50%,
-    color-mix(in srgb, var(--chapter-wash) 80%, rgba(8, 10, 17, 0.4)) 0%,
-    rgba(8, 10, 17, 0.18) 42%,
-    transparent 76%
-  );
+  background:
+    linear-gradient(
+      180deg,
+      transparent 0%,
+      rgba(8, 10, 17, 0.16) 24%,
+      rgba(8, 10, 17, 0.38) 50%,
+      rgba(8, 10, 17, 0.16) 76%,
+      transparent 100%
+    ),
+    linear-gradient(
+      180deg,
+      transparent 0%,
+      var(--chapter-wash) 50%,
+      transparent 100%
+    );
   transform: translateY(50%);
 }
 

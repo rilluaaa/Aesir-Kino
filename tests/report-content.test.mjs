@@ -201,10 +201,16 @@ test("renders the report as one continuous page with chapter navigation", async 
   assert.doesNotMatch(deck, /chapter-deck-enabled/);
 
   const styles = await readFile(globalsPath, "utf8");
+  const flowStyles = styles.match(/\.chapter-deck__flow\s*\{([\s\S]*?)\n\}/)?.[1] ?? "";
+  const bridgeStyles =
+    styles.match(/\.chapter-deck__chapter:not\(:last-child\)::after\s*\{([\s\S]*?)\n\}/)?.[1] ?? "";
   assert.match(styles, /\.chapter-deck\s*\{[\s\S]*?min-height:\s*100vh;/);
   assert.match(styles, /\.chapter-deck__chapter\s*\{[\s\S]*?scroll-margin-top:\s*0;/);
-  assert.match(styles, /\.chapter-deck__flow\s*\{[\s\S]*?linear-gradient\(/);
+  assert.match(flowStyles, /linear-gradient\(/);
+  assert.doesNotMatch(flowStyles, /radial-gradient\(/);
   assert.match(styles, /\.chapter-deck__chapter:not\(:last-child\)::after/);
+  assert.match(bridgeStyles, /linear-gradient\(/);
+  assert.doesNotMatch(bridgeStyles, /radial-gradient\(/);
   assert.doesNotMatch(styles, /overflow-y:\s*hidden/);
 });
 

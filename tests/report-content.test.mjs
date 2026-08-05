@@ -144,10 +144,13 @@ test("uses an interactive fluid hero without restoring the rotating object or cu
   assert.match(fluidHero, /pointermove/);
   assert.match(fluidHero, /touchmove/);
   assert.match(fluidHero, /CLOUD_COUNT = 2/);
+  assert.match(fluidHero, /CLOUD_LOBE_COUNT = 6/);
   assert.match(fluidHero, /CLOUD_PHASE_OFFSET = Math\.PI/);
   assert.match(fluidHero, /addOrbitClouds/);
+  assert.match(fluidHero, /lobeIndex < CLOUD_LOBE_COUNT/);
   assert.match(fluidHero, /0\.5 - Math\.sin\(phase\)/);
   assert.match(fluidHero, /data-cloud-count="2"/);
+  assert.match(fluidHero, /data-cloud-lobes="6"/);
   assert.doesNotMatch(fluidHero, /createRandomSplat/);
   assert.doesNotMatch(fluidHero, /index < 34/);
   assert.match(fluidHero, /IntersectionObserver/);

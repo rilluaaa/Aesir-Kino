@@ -9,7 +9,7 @@ const categoryImages = [
     alt: "Learner using an augmented-reality book experience"
   },
   {
-    src: "/impact-photos/category-elderly-new-life-vr.png",
+    src: "/impact-photos/category-elderly-new-life-vr.webp",
     alt: "Older adult using the New Life virtual-reality platform"
   },
   {

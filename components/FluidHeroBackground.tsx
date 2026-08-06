@@ -1,7 +1,28 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import * as THREE from "three";
+import {
+  AdditiveBlending,
+  BufferAttribute,
+  BufferGeometry,
+  ClampToEdgeWrapping,
+  Color,
+  HalfFloatType,
+  LinearFilter,
+  Mesh,
+  OrthographicCamera,
+  PerspectiveCamera,
+  PlaneGeometry,
+  Points,
+  RGBAFormat,
+  Scene,
+  ShaderMaterial,
+  Vector2,
+  WebGLRenderer,
+  WebGLRenderTarget,
+  type RenderTargetOptions,
+  type Texture
+} from "three";
 
 const MAX_SPLATS = 12;
 const CLOUD_COUNT = 2;
@@ -13,9 +34,9 @@ const FLOW_WAVE_ROWS = 72;
 const FLOW_WAVE_POINT_COUNT = FLOW_WAVE_COLUMNS * FLOW_WAVE_ROWS;
 
 type Splat = {
-  color: THREE.Color;
-  force: THREE.Vector2;
-  point: THREE.Vector2;
+  color: Color;
+  force: Vector2;
+  point: Vector2;
   radius: number;
   strength: number;
 };
@@ -259,31 +280,36 @@ function createFlowWaveGeometry() {
     }
   }
 
-  const flowWaveGeometry = new THREE.BufferGeometry();
-  flowWaveGeometry.setAttribute("position", new THREE.BufferAttribute(positions, 3));
+  const flowWaveGeometry = new BufferGeometry();
+  flowWaveGeometry.setAttribute("position", new BufferAttribute(positions, 3));
   return flowWaveGeometry;
 }
 
-function createInteractionColour() {
+function createInteractionColour(target = new Color()) {
   const usesWhiteHighlight = Math.random() < 0.28;
   if (usesWhiteHighlight) {
-    return new THREE.Color().setHSL(0.55, 0.42, 0.88);
+    return target.setHSL(0.55, 0.42, 0.88);
   }
 
-  return new THREE.Color().setHSL(0.52 + Math.random() * 0.1, 0.96, 0.58);
+  return target.setHSL(0.52 + Math.random() * 0.1, 0.96, 0.58);
 }
 
-function createCloudColour(cloudIndex: number, elapsedSeconds: number, accent = false) {
+function createCloudColour(
+  cloudIndex: number,
+  elapsedSeconds: number,
+  accent = false,
+  target = new Color()
+) {
   if (accent) {
     const hue = cloudIndex === 0 ? 0.53 : 0.58;
     const saturation = cloudIndex === 0 ? 0.38 : 0.58;
     const lightness = cloudIndex === 0 ? 0.9 : 0.82;
-    return new THREE.Color().setHSL(hue, saturation, lightness);
+    return target.setHSL(hue, saturation, lightness);
   }
 
   const baseHue = cloudIndex === 0 ? 0.53 : 0.61;
   const hueDrift = Math.sin(elapsedSeconds * 0.52 + cloudIndex * 1.7) * 0.018;
-  return new THREE.Color().setHSL(baseHue + hueDrift, 0.94, 0.58);
+  return target.setHSL(baseHue + hueDrift, 0.94, 0.58);
 }
 
 export function FluidHeroBackground() {
@@ -295,10 +321,10 @@ export function FluidHeroBackground() {
     const canvasElement: HTMLCanvasElement = currentCanvas;
 
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    let renderer: THREE.WebGLRenderer;
+    let renderer: WebGLRenderer;
 
     try {
-      renderer = new THREE.WebGLRenderer({
+      renderer = new WebGLRenderer({
         alpha: false,
         antialias: false,
         canvas: canvasElement,
@@ -312,17 +338,17 @@ export function FluidHeroBackground() {
     renderer.setClearColor(0x04050c, 1);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
 
-    const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
-    const geometry = new THREE.PlaneGeometry(2, 2);
-    const zeroPoints = Array.from({ length: MAX_SPLATS }, () => new THREE.Vector2());
-    const zeroForces = Array.from({ length: MAX_SPLATS }, () => new THREE.Vector2());
-    const zeroColours = Array.from({ length: MAX_SPLATS }, () => new THREE.Color());
+    const camera = new OrthographicCamera(-1, 1, 1, -1, 0, 1);
+    const geometry = new PlaneGeometry(2, 2);
+    const zeroPoints = Array.from({ length: MAX_SPLATS }, () => new Vector2());
+    const zeroForces = Array.from({ length: MAX_SPLATS }, () => new Vector2());
+    const zeroColours = Array.from({ length: MAX_SPLATS }, () => new Color());
     const zeroRadii = Array.from({ length: MAX_SPLATS }, () => 0);
     const zeroStrengths = Array.from({ length: MAX_SPLATS }, () => 0);
 
     const simulationUniforms = {
-      uPrevious: { value: null as THREE.Texture | null },
-      uResolution: { value: new THREE.Vector2(1, 1) },
+      uPrevious: { value: null as Texture | null },
+      uResolution: { value: new Vector2(1, 1) },
       uAspect: { value: 1 },
       uDelta: { value: 1 / 60 },
       uTime: { value: 0 },
@@ -333,41 +359,41 @@ export function FluidHeroBackground() {
       uSplatRadius: { value: zeroRadii },
       uSplatStrength: { value: zeroStrengths }
     };
-    const simulationMaterial = new THREE.ShaderMaterial({
+    const simulationMaterial = new ShaderMaterial({
       fragmentShader: simulationShader,
       uniforms: simulationUniforms,
       vertexShader
     });
-    const simulationScene = new THREE.Scene();
-    simulationScene.add(new THREE.Mesh(geometry, simulationMaterial));
+    const simulationScene = new Scene();
+    simulationScene.add(new Mesh(geometry, simulationMaterial));
 
     const displayUniforms = {
-      uTexture: { value: null as THREE.Texture | null },
-      uTexel: { value: new THREE.Vector2(1, 1) }
+      uTexture: { value: null as Texture | null },
+      uTexel: { value: new Vector2(1, 1) }
     };
-    const displayMaterial = new THREE.ShaderMaterial({
+    const displayMaterial = new ShaderMaterial({
       fragmentShader: displayShader,
       uniforms: displayUniforms,
       vertexShader
     });
-    const displayScene = new THREE.Scene();
-    displayScene.add(new THREE.Mesh(geometry, displayMaterial));
+    const displayScene = new Scene();
+    displayScene.add(new Mesh(geometry, displayMaterial));
 
-    const flowWaveCamera = new THREE.PerspectiveCamera(45, 1, 0.1, 80);
-    const flowWaveScene = new THREE.Scene();
+    const flowWaveCamera = new PerspectiveCamera(45, 1, 0.1, 80);
+    const flowWaveScene = new Scene();
     const flowWaveGeometry = createFlowWaveGeometry();
     const flowWaveUniforms = {
       uAppear: { value: 0 },
-      uColourHigh: { value: new THREE.Color("#f6feff") },
-      uColourLow: { value: new THREE.Color("#147fb9") },
+      uColourHigh: { value: new Color("#f6feff") },
+      uColourLow: { value: new Color("#147fb9") },
       uPixelRatio: { value: Math.min(window.devicePixelRatio, 1.5) },
-      uPointer: { value: new THREE.Vector2() },
+      uPointer: { value: new Vector2() },
       uPointerActivity: { value: 0 },
       uScroll: { value: 0 },
       uTime: { value: 0 }
     };
-    const flowWaveMaterial = new THREE.ShaderMaterial({
-      blending: THREE.AdditiveBlending,
+    const flowWaveMaterial = new ShaderMaterial({
+      blending: AdditiveBlending,
       depthTest: false,
       depthWrite: false,
       fragmentShader: flowWaveFragmentShader,
@@ -375,23 +401,23 @@ export function FluidHeroBackground() {
       uniforms: flowWaveUniforms,
       vertexShader: flowWaveVertexShader
     });
-    const flowWavePoints = new THREE.Points(flowWaveGeometry, flowWaveMaterial);
+    const flowWavePoints = new Points(flowWaveGeometry, flowWaveMaterial);
     flowWavePoints.frustumCulled = false;
     flowWaveScene.add(flowWavePoints);
 
-    const targetOptions: THREE.RenderTargetOptions = {
+    const targetOptions: RenderTargetOptions = {
       depthBuffer: false,
-      format: THREE.RGBAFormat,
-      magFilter: THREE.LinearFilter,
-      minFilter: THREE.LinearFilter,
+      format: RGBAFormat,
+      magFilter: LinearFilter,
+      minFilter: LinearFilter,
       stencilBuffer: false,
-      type: THREE.HalfFloatType,
-      wrapS: THREE.ClampToEdgeWrapping,
-      wrapT: THREE.ClampToEdgeWrapping
+      type: HalfFloatType,
+      wrapS: ClampToEdgeWrapping,
+      wrapT: ClampToEdgeWrapping
     };
 
-    let readTarget = new THREE.WebGLRenderTarget(2, 2, targetOptions);
-    let writeTarget = new THREE.WebGLRenderTarget(2, 2, targetOptions);
+    let readTarget = new WebGLRenderTarget(2, 2, targetOptions);
+    let writeTarget = new WebGLRenderTarget(2, 2, targetOptions);
     let frameHandle = 0;
     let isVisible = true;
     let isDestroyed = false;
@@ -402,7 +428,7 @@ export function FluidHeroBackground() {
     let orbitAngle = 0;
     const previousOrbits = Array.from(
       { length: CLOUD_COUNT },
-      () => new THREE.Vector2(0.5, 0.5)
+      () => new Vector2(0.5, 0.5)
     );
     const orbitSeeded = Array.from({ length: CLOUD_COUNT }, () => false);
     let cloudFrame = 0;
@@ -410,11 +436,22 @@ export function FluidHeroBackground() {
     let pointerMovedAt = -Infinity;
     let wavePointerActivity = 0;
     const splatQueue: Splat[] = [];
-    const wavePointer = new THREE.Vector2();
-    const wavePointerTarget = new THREE.Vector2();
+    const splatPool: Splat[] = [];
+    const wavePointer = new Vector2();
+    const wavePointerTarget = new Vector2();
+
+    function acquireSplat() {
+      return splatPool.pop() ?? {
+        color: new Color(),
+        force: new Vector2(),
+        point: new Vector2(),
+        radius: 0,
+        strength: 0
+      };
+    }
 
     function clearTargets() {
-      const previousColour = renderer.getClearColor(new THREE.Color());
+      const previousColour = renderer.getClearColor(new Color());
       const previousAlpha = renderer.getClearAlpha();
       renderer.setClearColor(0x04050c, 1);
       renderer.setRenderTarget(readTarget);
@@ -446,8 +483,8 @@ export function FluidHeroBackground() {
       if (readTarget.width !== targetWidth || readTarget.height !== targetHeight) {
         readTarget.dispose();
         writeTarget.dispose();
-        readTarget = new THREE.WebGLRenderTarget(targetWidth, targetHeight, targetOptions);
-        writeTarget = new THREE.WebGLRenderTarget(targetWidth, targetHeight, targetOptions);
+        readTarget = new WebGLRenderTarget(targetWidth, targetHeight, targetOptions);
+        writeTarget = new WebGLRenderTarget(targetWidth, targetHeight, targetOptions);
         simulationUniforms.uResolution.value.set(targetWidth, targetHeight);
         simulationUniforms.uAspect.value = aspect;
         displayUniforms.uTexel.value.set(1 / targetWidth, 1 / targetHeight);
@@ -466,16 +503,16 @@ export function FluidHeroBackground() {
         return;
       }
 
-      splatQueue.push({
-        color: createInteractionColour(),
-        force: new THREE.Vector2(movementX * 5, -movementY * 5),
-        point: new THREE.Vector2(
-          (clientX - rect.left) / rect.width,
-          1 - (clientY - rect.top) / rect.height
-        ),
-        radius: 0.0026,
-        strength: 0.72
-      });
+      const splat = acquireSplat();
+      createInteractionColour(splat.color);
+      splat.force.set(movementX * 5, -movementY * 5);
+      splat.point.set(
+        (clientX - rect.left) / rect.width,
+        1 - (clientY - rect.top) / rect.height
+      );
+      splat.radius = 0.0026;
+      splat.strength = 0.72;
+      splatQueue.push(splat);
       wavePointerTarget.set(
         ((clientX - rect.left) / rect.width) * 2 - 1,
         1 - ((clientY - rect.top) / rect.height) * 2
@@ -490,14 +527,16 @@ export function FluidHeroBackground() {
 
     let previousTouch: { x: number; y: number } | null = null;
     const handlePointerMove = (event: PointerEvent) => {
-      if (event.pointerType === "touch") return;
+      if (!isVisible || event.pointerType === "touch") return;
       queuePointerSplat(event.clientX, event.clientY, event.movementX, event.movementY);
     };
     const handleTouchStart = (event: TouchEvent) => {
+      if (!isVisible) return;
       const touch = event.touches[0];
       if (touch) previousTouch = { x: touch.clientX, y: touch.clientY };
     };
     const handleTouchMove = (event: TouchEvent) => {
+      if (!isVisible) return;
       const touch = event.touches[0];
       if (!touch || !previousTouch) return;
       queuePointerSplat(
@@ -509,6 +548,7 @@ export function FluidHeroBackground() {
       previousTouch = { x: touch.clientX, y: touch.clientY };
     };
     const handleTouchEnd = () => {
+      if (!isVisible) return;
       previousTouch = null;
     };
 
@@ -526,47 +566,49 @@ export function FluidHeroBackground() {
       for (let cloudIndex = 0; cloudIndex < CLOUD_COUNT; cloudIndex += 1) {
         const phase = orbitAngle + cloudIndex * CLOUD_PHASE_OFFSET;
         const breathing = 0.9 + 0.1 * Math.sin(elapsed * 0.58 + cloudIndex * Math.PI);
-        const point = new THREE.Vector2(
-          0.5 + Math.cos(phase) * radiusX * breathing,
-          0.5 - Math.sin(phase) * radiusY * breathing
-        );
+        const pointX = 0.5 + Math.cos(phase) * radiusX * breathing;
+        const pointY = 0.5 - Math.sin(phase) * radiusY * breathing;
 
         if (!orbitSeeded[cloudIndex]) {
           orbitSeeded[cloudIndex] = true;
-          previousOrbits[cloudIndex].copy(point);
+          previousOrbits[cloudIndex].set(pointX, pointY);
           continue;
         }
 
-        const force = point.clone().sub(previousOrbits[cloudIndex]).multiplyScalar(1500);
-        previousOrbits[cloudIndex].copy(point);
-        const mistOffset = new THREE.Vector2(
-          Math.cos(phase * 1.63 + cloudIndex) * 0.019,
-          Math.sin(phase * 1.41 + cloudIndex) * 0.019
-        );
+        const previousOrbit = previousOrbits[cloudIndex];
+        const forceX = (pointX - previousOrbit.x) * 1500;
+        const forceY = (pointY - previousOrbit.y) * 1500;
+        previousOrbit.set(pointX, pointY);
+        const mistOffsetX = Math.cos(phase * 1.63 + cloudIndex) * 0.019;
+        const mistOffsetY = Math.sin(phase * 1.41 + cloudIndex) * 0.019;
 
-        splatQueue.push({
-          color: createCloudColour(cloudIndex, elapsed),
-          force,
-          point,
-          radius: 0.0062,
-          strength: 0.26 * entrance
-        });
-        splatQueue.push({
-          color: createCloudColour(cloudIndex, elapsed + 0.8),
-          force: force.clone().multiplyScalar(0.72),
-          point: point.clone().add(mistOffset),
-          radius: 0.013,
-          strength: 0.11 * entrance
-        });
+        const primarySplat = acquireSplat();
+        createCloudColour(cloudIndex, elapsed, false, primarySplat.color);
+        primarySplat.force.set(forceX, forceY);
+        primarySplat.point.set(pointX, pointY);
+        primarySplat.radius = 0.0062;
+        primarySplat.strength = 0.26 * entrance;
+        splatQueue.push(primarySplat);
+
+        const mistSplat = acquireSplat();
+        createCloudColour(cloudIndex, elapsed + 0.8, false, mistSplat.color);
+        mistSplat.force.set(forceX * 0.72, forceY * 0.72);
+        mistSplat.point.set(pointX + mistOffsetX, pointY + mistOffsetY);
+        mistSplat.radius = 0.013;
+        mistSplat.strength = 0.11 * entrance;
+        splatQueue.push(mistSplat);
 
         if (cloudFrame % 3 === cloudIndex) {
-          splatQueue.push({
-            color: createCloudColour(cloudIndex, elapsed, true),
-            force: force.clone().multiplyScalar(0.86),
-            point: point.clone().sub(mistOffset.clone().multiplyScalar(0.65)),
-            radius: 0.0044,
-            strength: 0.14 * entrance
-          });
+          const accentSplat = acquireSplat();
+          createCloudColour(cloudIndex, elapsed, true, accentSplat.color);
+          accentSplat.force.set(forceX * 0.86, forceY * 0.86);
+          accentSplat.point.set(
+            pointX - mistOffsetX * 0.65,
+            pointY - mistOffsetY * 0.65
+          );
+          accentSplat.radius = 0.0044;
+          accentSplat.strength = 0.14 * entrance;
+          splatQueue.push(accentSplat);
         }
       }
     }
@@ -583,14 +625,14 @@ export function FluidHeroBackground() {
 
       resize();
       addOrbitClouds(now);
-      const splats = splatQueue.splice(0, MAX_SPLATS);
+      const splatCount = Math.min(splatQueue.length, MAX_SPLATS);
       const delta = Math.min((now - lastFrameTime) / 1000, 0.034);
       lastFrameTime = now;
 
       simulationUniforms.uPrevious.value = readTarget.texture;
       simulationUniforms.uDelta.value = Math.max(delta, 1 / 120);
       simulationUniforms.uTime.value = (now - startedAt) / 1000;
-      simulationUniforms.uSplatCount.value = splats.length;
+      simulationUniforms.uSplatCount.value = splatCount;
       const elapsed = (now - startedAt) / 1000;
       const scrollProgress = Math.min(window.scrollY / Math.max(canvasHeight, 1), 1);
       const scrollEase = scrollProgress * scrollProgress * (3 - 2 * scrollProgress);
@@ -614,7 +656,7 @@ export function FluidHeroBackground() {
       );
 
       for (let index = 0; index < MAX_SPLATS; index += 1) {
-        const splat = splats[index];
+        const splat = index < splatCount ? splatQueue[index] : undefined;
         if (splat) {
           zeroPoints[index].copy(splat.point);
           zeroForces[index].copy(splat.force);
@@ -629,6 +671,12 @@ export function FluidHeroBackground() {
           zeroStrengths[index] = 0;
         }
       }
+
+      for (let index = 0; index < splatCount; index += 1) {
+        splatPool.push(splatQueue[index]);
+      }
+      splatQueue.copyWithin(0, splatCount);
+      splatQueue.length -= splatCount;
 
       renderer.setRenderTarget(writeTarget);
       renderer.render(simulationScene, camera);

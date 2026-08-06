@@ -5,7 +5,6 @@ import test from "node:test";
 
 const contentPath = new URL("../lib/content.ts", import.meta.url);
 const pagePath = new URL("../app/page.tsx", import.meta.url);
-const productAtlasPath = new URL("../components/ProductAtlasSection.tsx", import.meta.url);
 const productAtlasCategoryPath = new URL("../components/ProductAtlasCategorySection.tsx", import.meta.url);
 const partnerValidationPath = new URL("../components/PartnerValidationSection.tsx", import.meta.url);
 const layoutPath = new URL("../app/layout.tsx", import.meta.url);
@@ -52,16 +51,16 @@ test("includes all approved report content groups", async () => {
 
 test("uses unique impact photography across report content and category sections", async () => {
   const sources = await Promise.all(
-    [contentPath, productAtlasPath, productAtlasCategoryPath, partnerValidationPath].map((path) =>
+    [contentPath, productAtlasCategoryPath, partnerValidationPath].map((path) =>
       readFile(path, "utf8")
     )
   );
   const photos = sources.flatMap((source) =>
-    [...source.matchAll(/\/impact-photos\/[\w-]+\.(?:jpg|jpeg|png)/g)].map((match) => match[0])
+    [...source.matchAll(/\/impact-photos\/[\w-]+\.(?:jpg|jpeg|png|webp)/g)].map((match) => match[0])
   );
 
   assert.equal(new Set(photos).size, photos.length);
-  assert.equal(photos.length, 16);
+  assert.equal(photos.length, 13);
 
   await Promise.all(
     photos.map((photo) => assertFileExists(new URL(`../public${photo}`, import.meta.url)))
@@ -116,7 +115,7 @@ test("renders partner validation and roadmap before the final CTA", async () => 
   }
 
   assert.ok(
-    pageSource.indexOf("<ProductAtlasSection />") <
+    pageSource.indexOf("Physical & Sports Technology") <
       pageSource.indexOf("<PartnerValidationSection />") &&
       pageSource.indexOf("<PartnerValidationSection />") <
         pageSource.indexOf("<RoadmapSection />") &&
@@ -152,24 +151,28 @@ test("uses an interactive fluid hero without restoring the rotating object or cu
   assert.match(fluidHero, /data-cloud-palette="ice-blue-white"/);
   assert.match(fluidHero, /data-cloud-style="twin-thick-trails"/);
   assert.match(fluidHero, /FLOW_WAVE_POINT_COUNT = FLOW_WAVE_COLUMNS \* FLOW_WAVE_ROWS/);
-  assert.match(fluidHero, /new THREE\.Points/);
-  assert.match(fluidHero, /THREE\.AdditiveBlending/);
+  assert.match(fluidHero, /new Points/);
+  assert.match(fluidHero, /blending: AdditiveBlending/);
+  assert.doesNotMatch(fluidHero, /import \* as THREE/);
   assert.match(fluidHero, /data-flow-wave="optimized"/);
   assert.match(fluidHero, /data-flow-wave-visibility="bold"/);
   assert.match(fluidHero, /data-renderer-count="1"/);
   assert.doesNotMatch(fluidHero, /UnrealBloomPass/);
   assert.match(styles, /hero-fluid-scrim[\s\S]*rgba\(4, 5, 12, 0\.48\)/);
-  assert.match(fluidHero, /radius: 0\.0062/);
-  assert.match(fluidHero, /radius: 0\.013/);
+  assert.match(fluidHero, /radius = 0\.0062/);
+  assert.match(fluidHero, /radius = 0\.013/);
+  assert.match(fluidHero, /const splatPool: Splat\[\] = \[\]/);
   assert.doesNotMatch(fluidHero, /createRandomSplat/);
   assert.doesNotMatch(fluidHero, /index < 34/);
   assert.match(fluidHero, /IntersectionObserver/);
+  assert.match(fluidHero, /if \(!isVisible \|\| event\.pointerType === "touch"\) return/);
+  assert.match(fluidHero, /handleTouchMove[\s\S]*if \(!isVisible\) return/);
   assert.match(fluidHero, /prefers-reduced-motion/);
 });
 
 test("keeps report sections connected without outer divider lines", async () => {
   const sources = await Promise.all(
-    [socialInnovationPath, aiAgentEcosystemPath, roadmapPath, productAtlasPath].map((path) =>
+    [socialInnovationPath, aiAgentEcosystemPath, roadmapPath, productAtlasCategoryPath].map((path) =>
       readFile(path, "utf8")
     )
   );

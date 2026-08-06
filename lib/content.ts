@@ -120,7 +120,7 @@ export const productModules: readonly ProductModule[] = [
     description:
       "Motion-sensing games support handwriting, spatial awareness, character recognition, and sustained practice through body movement and instant visual feedback.",
     tags: ["Literacy", "Motion", "Feedback"],
-    image: "/impact-photos/sen-magic-word-battle.png",
+    image: "/impact-photos/sen-magic-word-battle.webp",
     imageAlt: "Child playing the Magic Word Adventure motion-sensing literacy game"
   },
   {
@@ -129,7 +129,7 @@ export const productModules: readonly ProductModule[] = [
     description:
       "Interactive training supports fine motor control, coordination, reaction, and hand-eye integration for students who need repeated, structured practice.",
     tags: ["Fine Motor", "Coordination", "Attention"],
-    image: "/impact-photos/sen-motor-capability.png",
+    image: "/impact-photos/sen-motor-capability.webp",
     imageAlt: "Child using an interactive motor-skills training display"
   },
   {
@@ -147,7 +147,7 @@ export const productModules: readonly ProductModule[] = [
     description:
       "Motion-based exercises support balance, coordination, mobility, and confidence through repeatable routines that can be used in centres and care homes.",
     tags: ["Balance", "Mobility", "Confidence"],
-    image: "/impact-photos/elderly-fitness-session.png",
+    image: "/impact-photos/elderly-fitness-session.webp",
     imageAlt: "Older adults taking part in a guided fitness session"
   },
   {
@@ -156,7 +156,7 @@ export const productModules: readonly ProductModule[] = [
     description:
       "Immersive balance training creates safer practice environments for movement control, confidence building, and fall-risk exposure without high-impact physical strain.",
     tags: ["VR", "Fall Risk", "Rehab"],
-    image: "/impact-photos/elderly-fall-prevention-vr-2.png",
+    image: "/impact-photos/elderly-fall-prevention-vr-2.webp",
     imageAlt: "Older adult using a virtual-reality headset for fall-prevention training"
   },
   {
@@ -235,7 +235,7 @@ export const socialInnovation: SocialInnovation = {
       alt: "Older adults participating in a virtual-reality outreach session"
     },
     {
-      src: "/impact-photos/social-ar-game.png",
+      src: "/impact-photos/social-ar-game.webp",
       alt: "Participant engaging with an augmented-reality game"
     }
   ]

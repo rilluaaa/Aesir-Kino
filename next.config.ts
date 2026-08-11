@@ -1,18 +1,33 @@
 import type { NextConfig } from "next";
 
-const isProduction = process.env.NODE_ENV === "production";
-const basePath = isProduction ? "/Aesir-Kino" : "";
+function normalizeBasePath(value?: string): string {
+  const path = (value ?? "").trim();
+
+  if (!path || path === "/") {
+    return "";
+  }
+
+  const withLeadingSlash = path.startsWith("/")
+    ? path
+    : `/${path}`;
+
+  return withLeadingSlash.replace(/\/+$/, "");
+}
+
+const basePath = normalizeBasePath(
+  process.env.NEXT_PUBLIC_BASE_PATH
+);
 
 const nextConfig: NextConfig = {
   output: "export",
   basePath,
-  assetPrefix: basePath,
+  assetPrefix: basePath || undefined,
   trailingSlash: true,
   reactStrictMode: true,
   images: {
     formats: ["image/avif", "image/webp"],
-    unoptimized: true
-  }
+    unoptimized: true,
+  },
 };
 
 export default nextConfig;

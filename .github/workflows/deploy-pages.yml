@@ -36,6 +36,8 @@ jobs:
 
       - name: Build static site
         run: pnpm build
+        env:
+          NEXT_PUBLIC_BASE_PATH: /Aesir-Kino
 
       - name: Publish gh-pages branch
         uses: peaceiris/actions-gh-pages@v4.1.0

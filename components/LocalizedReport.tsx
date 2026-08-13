@@ -16,9 +16,9 @@ import { TargetStatusSection } from "@/components/TargetStatusSection";
 import { useLanguage } from "@/components/LanguageProvider";
 
 export function LocalizedReport() {
-  const { content } = useLanguage();
+  const { content, language } = useLanguage();
   const chapterContent = [
-    <HeroSection content={content.hero} key="hero" />,
+    <HeroSection content={content.hero} language={language} key="hero" />,
     <FounderStorySection content={content.founderStory} key="founder-story" />,
     <SocialInnovationSection content={content.socialInnovation} key="social-innovation" />,
     <FeaturesSection content={content.featuresSection} key="features" />,

@@ -178,6 +178,32 @@ test("uses an interactive fluid hero without restoring the rotating object or cu
   assert.match(fluidHero, /prefers-reduced-motion/);
 });
 
+test("replays all hero text without remounting the fluid background on language changes", async () => {
+  const [report, hero, styles] = await Promise.all([
+    readFile(reportPath, "utf8"),
+    readFile(heroPath, "utf8"),
+    readFile(globalsPath, "utf8")
+  ]);
+
+  assert.match(report, /const \{ content, language \} = useLanguage\(\)/);
+  assert.match(
+    report,
+    /<HeroSection content=\{content\.hero\} language=\{language\} key="hero" \/>/
+  );
+  assert.match(hero, /readonly language: Language/);
+  assert.match(hero, /key=\{language\}/);
+
+  const backgroundIndex = hero.indexOf("<FluidHeroBackground />");
+  const textResetIndex = hero.indexOf("key={language}");
+  const textContainerEndIndex = hero.indexOf("</section>");
+
+  assert.ok(backgroundIndex >= 0 && backgroundIndex < textResetIndex);
+  assert.ok(textResetIndex < textContainerEndIndex);
+  assert.match(hero, /480 \+ index \* 85/);
+  assert.match(hero, /1150 \+ index \* 22/);
+  assert.match(styles, /@media \(prefers-reduced-motion: reduce\)[\s\S]*?\.hero-word-reveal \{[\s\S]*?animation: none;/);
+});
+
 test("keeps report sections connected without outer divider lines", async () => {
   const sources = await Promise.all(
     [socialInnovationPath, aiAgentEcosystemPath, roadmapPath, productAtlasCategoryPath].map((path) =>

@@ -1,12 +1,13 @@
 import { FluidHeroBackground } from "@/components/FluidHeroBackground";
 import { MotionReveal } from "@/components/MotionReveal";
-import type { SiteContent } from "@/lib/i18n";
+import type { Language, SiteContent } from "@/lib/i18n";
 
 type HeroSectionProps = {
   readonly content: SiteContent["hero"];
+  readonly language: Language;
 };
 
-export function HeroSection({ content }: HeroSectionProps) {
+export function HeroSection({ content, language }: HeroSectionProps) {
   return (
     <section className="relative flex h-screen min-h-[760px] items-center justify-center overflow-hidden px-6">
       <div
@@ -20,7 +21,10 @@ export function HeroSection({ content }: HeroSectionProps) {
       </div>
       <FluidHeroBackground />
       <div aria-hidden="true" className="hero-fluid-scrim pointer-events-none absolute inset-0 z-[1]" />
-      <div className="relative z-10 mx-auto grid max-w-6xl gap-10 text-center">
+      <div
+        key={language}
+        className="relative z-10 mx-auto grid max-w-6xl gap-10 text-center"
+      >
         <MotionReveal immediate delay={0.32}>
           <p className="i18n-label mx-auto w-fit border border-white/10 bg-white/[0.03] px-4 py-2 text-xs font-bold uppercase tracking-[0.32em] text-accent-neon-cyan backdrop-blur-md">
             {content.eyebrow}

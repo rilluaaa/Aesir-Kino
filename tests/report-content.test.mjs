@@ -54,6 +54,75 @@ test("includes all approved report content groups", async () => {
   }
 });
 
+test("uses the final approved Chinese copy and Impact Analytics terminology", async () => {
+  const [english, traditional, simplified] = await Promise.all([
+    readFile(contentPath, "utf8"),
+    readFile(traditionalContentPath, "utf8"),
+    readFile(simplifiedContentPath, "utf8")
+  ]);
+
+  for (const phrase of ["Impact Analytics", "Impact Analytics Layer"]) {
+    assert.match(english, new RegExp(phrase));
+  }
+
+  for (const phrase of [
+    "以高端而具電影感的視角，呈現 AESIR 在SEN領域積極樂齡，復康及運動科技的生態系統。",
+    "三個互相連結的層次，串連照護，學習與智能。",
+    "為照護團隊，NGO 及合作夥伴而設的數據層。",
+    "AESIR 將前線學習與復康活動轉化為可量化的觸及範圍，參與度及成效指標。",
+    "成效分析",
+    "Impact Analytics Layer",
+    "關鍵是研究",
+    "AI代理生態系統",
+    "一個旨在擴大公共價值的社會企業模式。",
+    "打造更具預防性，更可及的影響力系統。",
+    "全面的可及性"
+  ]) {
+    assert.match(traditional, new RegExp(phrase));
+  }
+
+  for (const phrase of [
+    "以高端而具电影感的视角，呈现 AESIR 在SEN领域积极老龄化，康复及运动科技的生态系统。",
+    "三个相互连接的层级，贯通照护，学习与智能。",
+    "为照护团队，NGO 及合作伙伴而设的数据层。",
+    "AESIR 将一线学习与康复活动转化为可量化的覆盖范围，参与度及成效指标。",
+    "成效分析",
+    "Impact Analytics Layer",
+    "关键是研究",
+    "AI代理生态系统",
+    "一个旨在扩大公共价值的社会企业模式。",
+    "打造更具预防性，更可及的影响力系统。",
+    "全面的可及性"
+  ]) {
+    assert.match(simplified, new RegExp(phrase));
+  }
+
+  const deprecatedTerms = [
+    ["Impact", "Intelligence"].join(" "),
+    "影響力" + "智能",
+    "影响力" + "智能",
+    "AI 智能體" + "生態系統",
+    "AI 智能体" + "生态系统",
+    "研究是" + "關鍵",
+    "研究是" + "关键",
+    "全面" + "可及",
+    "普惠" + "可及",
+    "持續放大" + "公共價值",
+    "持续放大" + "公共价值",
+    "更普及" + "可及",
+    "更普惠" + "可及"
+  ];
+
+  for (const source of [english, traditional, simplified]) {
+    for (const term of deprecatedTerms) {
+      assert.equal(source.includes(term), false, `deprecated term remains: ${term}`);
+    }
+  }
+
+  assert.doesNotMatch(traditional, /，\s/);
+  assert.doesNotMatch(simplified, /，\s/);
+});
+
 test("uses unique impact photography across report content and category sections", async () => {
   const sources = await Promise.all(
     [contentPath, productAtlasCategoryPath, partnerValidationPath].map((path) =>

@@ -63,7 +63,7 @@ export const enContent = {
         metricLabel: "seniors supported"
       },
       {
-        eyebrow: "Impact Intelligence",
+        eyebrow: "Impact Analytics",
         title: "A data layer for care teams, NGOs, and partners.",
         description:
           "AESIR translates frontline learning and rehabilitation activity into measurable indicators of reach, engagement, and outcomes.",
@@ -73,7 +73,7 @@ export const enContent = {
     ]
   },
   impactMetricsSection: {
-    eyebrow: "Impact Intelligence Layer",
+    eyebrow: "Impact Analytics Layer",
     title: "Frontline activity translated into measurable indicators.",
     description:
       "AESIR tracks reach, SEN engagement, elderly service deployment, training participation, and observable progress signals across its care technology ecosystem.",

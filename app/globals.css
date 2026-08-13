@@ -34,6 +34,12 @@ html:not([data-language="en"]) body {
   font-family: "PingFang TC", "PingFang SC", "Noto Sans CJK TC", "Microsoft JhengHei", var(--font-body);
 }
 
+html[data-language="traditional"] body,
+html[data-language="simplified"] body {
+  text-spacing-trim: trim-all;
+  font-feature-settings: "halt" 1;
+}
+
 html:not([data-language="en"]) .i18n-label {
   letter-spacing: 0.06em;
   line-height: 1.55;

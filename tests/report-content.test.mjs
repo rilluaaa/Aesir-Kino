@@ -119,8 +119,19 @@ test("uses the final approved Chinese copy and Impact Analytics terminology", as
     }
   }
 
-  assert.doesNotMatch(traditional, /，\s/);
-  assert.doesNotMatch(simplified, /，\s/);
+  assert.doesNotMatch(traditional, /[，。：；！？、]\s/);
+  assert.doesNotMatch(simplified, /[，。：；！？、]\s/);
+});
+
+test("applies compact CJK punctuation typography only to Chinese language modes", async () => {
+  const styles = await readFile(globalsPath, "utf8");
+  const compactCjkRule = styles.match(
+    /html\[data-language="traditional"\] body,\s*html\[data-language="simplified"\] body\s*\{([\s\S]*?)\}/
+  )?.[1] ?? "";
+
+  assert.match(compactCjkRule, /text-spacing-trim:\s*trim-all;/);
+  assert.match(compactCjkRule, /font-feature-settings:\s*"halt" 1;/);
+  assert.doesNotMatch(styles, /html\[data-language="en"\] body[\s\S]*?text-spacing-trim/);
 });
 
 test("uses unique impact photography across report content and category sections", async () => {

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { memo, useEffect, useRef } from "react";
 import {
   AdditiveBlending,
   BufferAttribute,
@@ -312,7 +312,7 @@ function createCloudColour(
   return target.setHSL(baseHue + hueDrift, 0.94, 0.58);
 }
 
-export function FluidHeroBackground() {
+function FluidHeroBackgroundComponent() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -761,3 +761,5 @@ export function FluidHeroBackground() {
     />
   );
 }
+
+export const FluidHeroBackground = memo(FluidHeroBackgroundComponent);

@@ -1,32 +1,34 @@
 import { MotionReveal } from "@/components/MotionReveal";
 import { CountUpMetric } from "@/components/CountUpMetric";
-import { impactMetrics } from "@/lib/content";
+import type { SiteContent } from "@/lib/i18n";
 
-export function ImpactMetricsSection() {
+type ImpactMetricsSectionProps = {
+  readonly content: SiteContent["impactMetricsSection"];
+};
+
+export function ImpactMetricsSection({ content }: ImpactMetricsSectionProps) {
   return (
     <section className="relative px-6 py-28 md:py-36">
       <div className="mx-auto max-w-7xl">
         <MotionReveal className="mb-14 max-w-4xl">
-          <p className="text-xs font-bold uppercase tracking-[0.3em] text-accent-neon-cyan">
-            Impact Intelligence Layer
+          <p className="i18n-label text-xs font-bold uppercase tracking-[0.3em] text-accent-neon-cyan">
+            {content.eyebrow}
           </p>
           <h2 className="mt-5 text-balance text-4xl font-semibold leading-tight text-white md:text-6xl">
-            Frontline activity translated into measurable indicators.
+            {content.title}
           </h2>
           <p className="mt-6 max-w-3xl text-lg leading-8 text-report-muted">
-            AESIR tracks reach, SEN engagement, elderly service deployment,
-            training participation, and observable progress signals across its
-            care technology ecosystem.
+            {content.description}
           </p>
         </MotionReveal>
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-          {impactMetrics.map((metric, index) => (
+          {content.metrics.map((metric, index) => (
             <MotionReveal
               delay={(index % 4) * 0.05}
               key={`${metric.domain}-${metric.label}`}
             >
               <article className="glass-panel min-h-64 p-6 shadow-glass-panel">
-                <p className="text-xs font-bold uppercase tracking-[0.22em] text-white/45">
+                <p className="i18n-label text-xs font-bold uppercase tracking-[0.22em] text-white/45">
                   {metric.domain}
                 </p>
                 <CountUpMetric

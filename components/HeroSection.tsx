@@ -1,13 +1,12 @@
 import { FluidHeroBackground } from "@/components/FluidHeroBackground";
 import { MotionReveal } from "@/components/MotionReveal";
+import type { SiteContent } from "@/lib/i18n";
 
-const headingWords = ["AI", "care", "systems", "for", "a", "measurable", "world."];
-const sublineWords =
-  "A premium, cinematic view of AESIR's SEN intervention, active aging, rehabilitation, and sports technology ecosystem.".split(
-    " "
-  );
+type HeroSectionProps = {
+  readonly content: SiteContent["hero"];
+};
 
-export function HeroSection() {
+export function HeroSection({ content }: HeroSectionProps) {
   return (
     <section className="relative flex h-screen min-h-[760px] items-center justify-center overflow-hidden px-6">
       <div
@@ -23,37 +22,37 @@ export function HeroSection() {
       <div aria-hidden="true" className="hero-fluid-scrim pointer-events-none absolute inset-0 z-[1]" />
       <div className="relative z-10 mx-auto grid max-w-6xl gap-10 text-center">
         <MotionReveal immediate delay={0.32}>
-          <p className="mx-auto w-fit border border-white/10 bg-white/[0.03] px-4 py-2 text-xs font-bold uppercase tracking-[0.32em] text-accent-neon-cyan backdrop-blur-md">
-            AESIR Impact Report
+          <p className="i18n-label mx-auto w-fit border border-white/10 bg-white/[0.03] px-4 py-2 text-xs font-bold uppercase tracking-[0.32em] text-accent-neon-cyan backdrop-blur-md">
+            {content.eyebrow}
           </p>
         </MotionReveal>
         <h1
-          aria-label="AI care systems for a measurable world."
-          className="text-balance font-display text-6xl font-semibold leading-[0.92] tracking-normal text-white md:text-8xl lg:text-9xl"
+          aria-label={content.heading}
+          className="i18n-heading text-balance font-display text-6xl font-semibold leading-[0.92] tracking-normal text-white md:text-8xl lg:text-9xl"
         >
-          {headingWords.map((word, index) => (
+          {content.headingSegments.map((segment, index) => (
             <span
               aria-hidden="true"
-              className={`hero-word-reveal ${word === "measurable" ? "text-gradient-neon" : ""}`}
-              key={word}
+              className={`hero-word-reveal ${segment.includes("measurable") || segment.includes("可量化") ? "text-gradient-neon" : ""}`}
+              key={`${segment}-${index}`}
               style={{ animationDelay: `${480 + index * 85}ms` }}
             >
-              {word}&nbsp;
+              {segment}{content.spacedSegments ? "\u00a0" : null}
             </span>
           ))}
         </h1>
         <p
-          aria-label="A premium, cinematic view of AESIR's SEN intervention, active aging, rehabilitation, and sports technology ecosystem."
+          aria-label={content.description}
           className="mx-auto max-w-3xl text-lg leading-8 text-report-muted md:text-xl"
         >
-          {sublineWords.map((word, index) => (
+          {content.descriptionSegments.map((segment, index) => (
             <span
               aria-hidden="true"
               className="hero-word-reveal hero-word-reveal--subline"
-              key={`${word}-${index}`}
+              key={`${segment}-${index}`}
               style={{ animationDelay: `${1150 + index * 22}ms` }}
             >
-              {word}&nbsp;
+              {segment}{content.spacedSegments ? "\u00a0" : null}
             </span>
           ))}
         </p>

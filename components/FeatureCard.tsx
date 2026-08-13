@@ -1,4 +1,4 @@
-import type { FeatureCard as FeatureCardType } from "@/lib/content";
+import type { FeatureCard as FeatureCardType } from "@/lib/i18n/types";
 import { CountUpMetric } from "@/components/CountUpMetric";
 
 type FeatureCardProps = {
@@ -9,7 +9,7 @@ export function FeatureCard({ feature }: FeatureCardProps) {
   return (
     <article className="glass-panel group min-h-[29rem] p-7 shadow-glass-panel transition duration-300 hover:-translate-y-1 hover:border-accent-neon-cyan/35 hover:shadow-neon-cyan md:p-9">
       <div className="mb-8 flex items-center justify-between">
-        <p className="text-xs font-bold uppercase tracking-[0.26em] text-accent-neon-cyan">
+        <p className="i18n-label text-xs font-bold uppercase tracking-[0.26em] text-accent-neon-cyan">
           {feature.eyebrow}
         </p>
       </div>
@@ -18,7 +18,7 @@ export function FeatureCard({ feature }: FeatureCardProps) {
           className="text-gradient-neon block font-display text-[4.5rem] font-semibold leading-none tracking-normal tabular-nums md:text-[5.1rem] xl:text-[5.6rem]"
           value={feature.metric}
         />
-        <p className="mt-3 text-xs font-bold uppercase tracking-[0.22em] text-white/45">
+        <p className="i18n-label mt-3 text-xs font-bold uppercase tracking-[0.22em] text-white/45">
           {feature.metricLabel}
         </p>
       </div>

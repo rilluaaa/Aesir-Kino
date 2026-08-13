@@ -1,22 +1,26 @@
 import Image from "next/image";
 import { withBasePath } from "@/lib/base-path";
 import { MotionReveal } from "@/components/MotionReveal";
-import { productModules } from "@/lib/content";
+import type { SiteContent } from "@/lib/i18n";
 
-export function ProductEcosystemSection() {
+type ProductEcosystemSectionProps = {
+  readonly content: SiteContent["productEcosystemSection"];
+};
+
+export function ProductEcosystemSection({ content }: ProductEcosystemSectionProps) {
   return (
     <section className="relative px-6 py-28 md:py-36">
       <div className="mx-auto max-w-7xl">
         <MotionReveal className="mb-14 max-w-4xl">
-          <p className="text-xs font-bold uppercase tracking-[0.3em] text-accent-neon-cyan">
-            Product Impact Modules
+          <p className="i18n-label text-xs font-bold uppercase tracking-[0.3em] text-accent-neon-cyan">
+            {content.eyebrow}
           </p>
           <h2 className="mt-5 text-balance text-4xl font-semibold leading-tight text-white md:text-6xl">
-            A deeper product stack for learning, rehabilitation, and active play.
+            {content.title}
           </h2>
         </MotionReveal>
         <div className="grid gap-5 lg:grid-cols-2">
-          {productModules.map((product, index) => (
+          {content.modules.map((product, index) => (
             <MotionReveal delay={(index % 2) * 0.08} key={product.title}>
               <article className="glass-panel overflow-hidden shadow-glass-panel">
                 <div className="relative aspect-[16/10] overflow-hidden">
@@ -30,7 +34,7 @@ export function ProductEcosystemSection() {
                   <div className="absolute inset-0 bg-gradient-to-t from-dark-base via-dark-base/30 to-transparent" />
                 </div>
                 <div className="p-7 md:p-9">
-                  <p className="text-xs font-bold uppercase tracking-[0.22em] text-accent-neon-cyan">
+                  <p className="i18n-label text-xs font-bold uppercase tracking-[0.22em] text-accent-neon-cyan">
                     {product.eyebrow}
                   </p>
                   <h3 className="mt-5 text-3xl font-semibold leading-tight text-white">
@@ -42,7 +46,7 @@ export function ProductEcosystemSection() {
                   <div className="mt-7 flex flex-wrap gap-2">
                     {product.tags.map((tag) => (
                       <span
-                        className="border border-white/10 px-3 py-2 text-xs font-bold uppercase tracking-[0.14em] text-white/75"
+                        className="i18n-label border border-white/10 px-3 py-2 text-xs font-bold uppercase tracking-[0.14em] text-white/75"
                         key={`${product.title}-${tag}`}
                       >
                         {tag}

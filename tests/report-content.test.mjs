@@ -3,8 +3,13 @@ import { access, constants } from "node:fs";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
 
-const contentPath = new URL("../lib/content.ts", import.meta.url);
-const pagePath = new URL("../app/page.tsx", import.meta.url);
+const contentPath = new URL("../lib/i18n/en.ts", import.meta.url);
+const traditionalContentPath = new URL("../lib/i18n/traditional.ts", import.meta.url);
+const simplifiedContentPath = new URL("../lib/i18n/simplified.ts", import.meta.url);
+const i18nIndexPath = new URL("../lib/i18n/index.ts", import.meta.url);
+const reportPath = new URL("../components/LocalizedReport.tsx", import.meta.url);
+const languageProviderPath = new URL("../components/LanguageProvider.tsx", import.meta.url);
+const languageSwitcherPath = new URL("../components/LanguageSwitcher.tsx", import.meta.url);
 const productAtlasCategoryPath = new URL("../components/ProductAtlasCategorySection.tsx", import.meta.url);
 const partnerValidationPath = new URL("../components/PartnerValidationSection.tsx", import.meta.url);
 const layoutPath = new URL("../app/layout.tsx", import.meta.url);
@@ -35,10 +40,10 @@ test("includes all approved report content groups", async () => {
   for (const token of [
     "founderStory",
     "socialInnovation",
-    "aiCapabilities",
-    "productAtlasCategories",
+    "capabilities",
+    "categories",
     "partnerValidation",
-    "roadmapItems",
+    "roadmap",
     "Ernest Chan",
     "Zero Wong",
     "Magic Word Adventure",
@@ -68,37 +73,40 @@ test("uses unique impact photography across report content and category sections
 });
 
 test("renders the founder story and social-innovation sections after the hero", async () => {
-  const pageSource = await readFile(pagePath, "utf8");
+  const pageSource = await readFile(reportPath, "utf8");
 
   for (const token of ["FounderStorySection", "SocialInnovationSection"]) {
     assert.match(pageSource, new RegExp(token));
   }
 
   assert.ok(
-    pageSource.indexOf("<HeroSection />") <
-      pageSource.indexOf("<FounderStorySection />") &&
-      pageSource.indexOf("<FounderStorySection />") <
-        pageSource.indexOf("<SocialInnovationSection />")
+    pageSource.indexOf("<HeroSection") <
+      pageSource.indexOf("<FounderStorySection") &&
+      pageSource.indexOf("<FounderStorySection") <
+        pageSource.indexOf("<SocialInnovationSection")
   );
 });
 
 test("renders the AI ecosystem after impact metrics", async () => {
-  const pageSource = await readFile(pagePath, "utf8");
+  const pageSource = await readFile(reportPath, "utf8");
 
   assert.match(pageSource, /AIAgentEcosystemSection/);
   assert.ok(
-    pageSource.indexOf("<ImpactMetricsSection />") <
-      pageSource.indexOf("<AIAgentEcosystemSection />")
+    pageSource.indexOf("<ImpactMetricsSection") <
+      pageSource.indexOf("<AIAgentEcosystemSection")
   );
 });
 
 test("renders three dedicated product atlas pages after the product ecosystem", async () => {
-  const pageSource = await readFile(pagePath, "utf8");
+  const [pageSource, englishContent] = await Promise.all([
+    readFile(reportPath, "utf8"),
+    readFile(contentPath, "utf8")
+  ]);
 
   assert.match(pageSource, /ProductAtlasCategorySection/);
-  assert.ok(pageSource.indexOf("Product Ecosystem") < pageSource.indexOf("SEN Support"));
-  assert.ok(pageSource.indexOf("SEN Support") < pageSource.indexOf("Elderly Care & Rehabilitation"));
-  assert.ok(pageSource.indexOf("Elderly Care & Rehabilitation") < pageSource.indexOf("Physical & Sports Technology"));
+  assert.ok(englishContent.indexOf("Product Ecosystem") < englishContent.indexOf("SEN Support"));
+  assert.ok(englishContent.indexOf("SEN Support") < englishContent.indexOf("Elderly Care & Rehabilitation"));
+  assert.ok(englishContent.indexOf("Elderly Care & Rehabilitation") < englishContent.indexOf("Physical & Sports Technology"));
 });
 
 test("uses an early viewport reveal threshold for each product atlas page", async () => {
@@ -108,18 +116,18 @@ test("uses an early viewport reveal threshold for each product atlas page", asyn
 });
 
 test("renders partner validation and roadmap before the final CTA", async () => {
-  const pageSource = await readFile(pagePath, "utf8");
+  const pageSource = await readFile(reportPath, "utf8");
 
   for (const token of ["PartnerValidationSection", "RoadmapSection"]) {
     assert.match(pageSource, new RegExp(token));
   }
 
   assert.ok(
-    pageSource.indexOf("Physical & Sports Technology") <
-      pageSource.indexOf("<PartnerValidationSection />") &&
-      pageSource.indexOf("<PartnerValidationSection />") <
-        pageSource.indexOf("<RoadmapSection />") &&
-      pageSource.indexOf("<RoadmapSection />") < pageSource.indexOf("<CTASection />")
+    pageSource.indexOf("ProductAtlasCategorySection") <
+      pageSource.indexOf("<PartnerValidationSection") &&
+      pageSource.indexOf("<PartnerValidationSection") <
+        pageSource.indexOf("<RoadmapSection") &&
+      pageSource.indexOf("<RoadmapSection") < pageSource.indexOf("<CTASection")
   );
 });
 
@@ -186,7 +194,7 @@ test("keeps report sections connected without outer divider lines", async () => 
 
 test("renders the report as one continuous page with chapter navigation", async () => {
   const [page, deck] = await Promise.all([
-    readFile(pagePath, "utf8"),
+    readFile(reportPath, "utf8"),
     readFile(chapterDeckPath, "utf8").catch(() => "")
   ]);
 
@@ -218,7 +226,7 @@ test("renders the report as one continuous page with chapter navigation", async 
 });
 
 test("keeps the existing report sections as individually addressable chapter pages", async () => {
-  const page = await readFile(pagePath, "utf8");
+  const page = await readFile(reportPath, "utf8");
 
   for (const section of [
     "HeroSection",
@@ -236,4 +244,74 @@ test("keeps the existing report sections as individually addressable chapter pag
   ]) {
     assert.match(page, new RegExp(section));
   }
+});
+
+test("provides complete English, Traditional Chinese, and Simplified Chinese dictionaries", async () => {
+  const [english, traditional, simplified] = await Promise.all([
+    readFile(contentPath, "utf8"),
+    readFile(traditionalContentPath, "utf8"),
+    readFile(simplifiedContentPath, "utf8")
+  ]);
+
+  for (const source of [english, traditional, simplified]) {
+    for (const section of [
+      "metadata",
+      "languageSelector",
+      "chapters",
+      "hero",
+      "featuresSection",
+      "impactMetricsSection",
+      "targetStatusSection",
+      "productEcosystemSection",
+      "founderStory",
+      "socialInnovation",
+      "aiEcosystem",
+      "productAtlas",
+      "partnerValidation",
+      "roadmap",
+      "cta"
+    ]) {
+      assert.match(source, new RegExp(`${section}:`));
+    }
+    assert.match(source, /satisfies SiteContent/);
+  }
+
+  assert.match(traditional, /AESIR 影響力報告/);
+  assert.match(traditional, /前線實踐/);
+  assert.match(traditional, /探索影響力/);
+  assert.match(simplified, /AESIR 影响力报告/);
+  assert.match(simplified, /一线实践/);
+  assert.match(simplified, /探索影响力/);
+});
+
+test("persists only valid manual language choices and exposes an accessible custom menu", async () => {
+  const [index, provider, switcher] = await Promise.all([
+    readFile(i18nIndexPath, "utf8"),
+    readFile(languageProviderPath, "utf8"),
+    readFile(languageSwitcherPath, "utf8")
+  ]);
+
+  assert.match(index, /aesir-kino-language/);
+  assert.match(index, /"en",\s*"traditional",\s*"simplified"/);
+  assert.match(provider, /localStorage\.getItem/);
+  assert.match(provider, /isLanguage/);
+  assert.match(provider, /document\.documentElement\.lang/);
+  assert.match(provider, /document\.title/);
+  assert.match(switcher, /aria-haspopup="menu"/);
+  assert.match(switcher, /aria-expanded/);
+  assert.match(switcher, /role="menuitemradio"/);
+  assert.match(switcher, /Escape/);
+  assert.match(switcher, /pointerdown/);
+});
+
+test("uses manual language-aware hero segments without splitting Chinese on spaces", async () => {
+  const [hero, traditional, simplified] = await Promise.all([
+    readFile(heroPath, "utf8"),
+    readFile(traditionalContentPath, "utf8"),
+    readFile(simplifiedContentPath, "utf8")
+  ]);
+
+  assert.doesNotMatch(hero, /split\(" "\)/);
+  assert.match(traditional, /headingSegments: \["為", "可量化的世界", "打造", "AI", "照護系統。"\]/);
+  assert.match(simplified, /headingSegments: \["为", "可量化的世界", "打造", "AI", "照护系统。"\]/);
 });

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, type ReactNode } from "react";
+import { CjkText } from "@/components/CjkText";
 import { interpolate } from "@/lib/i18n";
 
 export type Chapter = {
@@ -60,7 +61,7 @@ export function ChapterDeck({ accessibility, chapters }: ChapterDeckProps) {
       <div className="chapter-deck__status" aria-live="polite">
         <span>{String(activeIndex + 1).padStart(2, "0")}</span>
         <span className="chapter-deck__status-line" />
-        <span>{activeChapter?.label}</span>
+        <span>{activeChapter ? <CjkText>{activeChapter.label}</CjkText> : null}</span>
       </div>
 
       <nav aria-label={accessibility.chapterNavigation} className="chapter-deck__nav">

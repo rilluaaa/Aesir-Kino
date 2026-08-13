@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { CjkText } from "@/components/CjkText";
 import { withBasePath } from "@/lib/base-path";
 import { MotionReveal } from "@/components/MotionReveal";
 import type { SiteContent } from "@/lib/i18n";
@@ -13,10 +14,10 @@ export function ProductEcosystemSection({ content }: ProductEcosystemSectionProp
       <div className="mx-auto max-w-7xl">
         <MotionReveal className="mb-14 max-w-4xl">
           <p className="i18n-label text-xs font-bold uppercase tracking-[0.3em] text-accent-neon-cyan">
-            {content.eyebrow}
+            <CjkText>{content.eyebrow}</CjkText>
           </p>
           <h2 className="mt-5 text-balance text-4xl font-semibold leading-tight text-white md:text-6xl">
-            {content.title}
+            <CjkText>{content.title}</CjkText>
           </h2>
         </MotionReveal>
         <div className="grid gap-5 lg:grid-cols-2">
@@ -35,13 +36,13 @@ export function ProductEcosystemSection({ content }: ProductEcosystemSectionProp
                 </div>
                 <div className="p-7 md:p-9">
                   <p className="i18n-label text-xs font-bold uppercase tracking-[0.22em] text-accent-neon-cyan">
-                    {product.eyebrow}
+                    <CjkText>{product.eyebrow}</CjkText>
                   </p>
                   <h3 className="mt-5 text-3xl font-semibold leading-tight text-white">
-                    {product.title}
+                    <CjkText>{product.title}</CjkText>
                   </h3>
                   <p className="mt-5 text-lg leading-8 text-report-muted">
-                    {product.description}
+                    <CjkText>{product.description}</CjkText>
                   </p>
                   <div className="mt-7 flex flex-wrap gap-2">
                     {product.tags.map((tag) => (
@@ -49,7 +50,7 @@ export function ProductEcosystemSection({ content }: ProductEcosystemSectionProp
                         className="i18n-label border border-white/10 px-3 py-2 text-xs font-bold uppercase tracking-[0.14em] text-white/75"
                         key={`${product.title}-${tag}`}
                       >
-                        {tag}
+                        <CjkText>{tag}</CjkText>
                       </span>
                     ))}
                   </div>

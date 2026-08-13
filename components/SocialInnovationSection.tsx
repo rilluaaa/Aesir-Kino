@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { CjkText } from "@/components/CjkText";
 import { withBasePath } from "@/lib/base-path";
 import { MotionReveal } from "@/components/MotionReveal";
 import type { SocialInnovation } from "@/lib/i18n/types";
@@ -17,31 +18,31 @@ export function SocialInnovationSection({ content }: SocialInnovationSectionProp
       <div className="relative mx-auto max-w-7xl">
         <MotionReveal className="max-w-5xl">
           <p className="i18n-label text-xs font-bold uppercase tracking-[0.3em] text-accent-neon-cyan">
-            {content.eyebrow}
+            <CjkText>{content.eyebrow}</CjkText>
           </p>
           <h2 className="mt-5 text-balance font-display text-4xl font-semibold leading-tight text-white md:text-6xl">
-            {content.title}
+            <CjkText>{content.title}</CjkText>
           </h2>
           <p className="mt-8 max-w-4xl border-l-2 border-accent-neon-purple pl-6 text-2xl font-medium leading-9 text-white/90 md:text-3xl md:leading-[1.35]">
-            {content.statement}
+            <CjkText>{content.statement}</CjkText>
           </p>
         </MotionReveal>
 
         <div className="mt-14 grid gap-5 lg:grid-cols-12">
           <MotionReveal className="glass-panel p-7 shadow-glass-panel lg:col-span-4 md:p-9">
             <p className="i18n-label text-xs font-bold uppercase tracking-[0.22em] text-accent-neon-purple">
-              {content.frictionLabel}
+              <CjkText>{content.frictionLabel}</CjkText>
             </p>
             <p className="mt-5 text-lg leading-8 text-report-muted">
-              {content.challenge}
+              <CjkText>{content.challenge}</CjkText>
             </p>
           </MotionReveal>
           <MotionReveal className="glass-panel p-7 shadow-glass-panel lg:col-span-4 md:p-9" delay={0.08}>
             <p className="i18n-label text-xs font-bold uppercase tracking-[0.22em] text-accent-neon-cyan">
-              {content.responseLabel}
+              <CjkText>{content.responseLabel}</CjkText>
             </p>
             <p className="mt-5 text-lg leading-8 text-report-muted">
-              {content.response}
+              <CjkText>{content.response}</CjkText>
             </p>
           </MotionReveal>
           <MotionReveal className="grid gap-5 sm:grid-cols-2 lg:col-span-4" delay={0.16}>
@@ -59,7 +60,7 @@ export function SocialInnovationSection({ content }: SocialInnovationSectionProp
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-dark-base/80 to-transparent" />
                 <span className="i18n-label absolute bottom-4 left-4 text-xs font-bold tracking-[0.2em] text-white/85">
-                  0{index + 1} / {content.fieldPracticeLabel}
+                  0{index + 1} / <CjkText>{content.fieldPracticeLabel}</CjkText>
                 </span>
               </div>
             ))}

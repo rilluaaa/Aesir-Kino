@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { CjkText } from "@/components/CjkText";
 import { withBasePath } from "@/lib/base-path";
 import { MotionReveal } from "@/components/MotionReveal";
 import type { FounderStory } from "@/lib/i18n/types";
@@ -14,10 +15,10 @@ export function FounderStorySection({ content }: FounderStorySectionProps) {
       <div className="relative mx-auto grid max-w-7xl gap-12 lg:grid-cols-12 lg:items-center">
         <MotionReveal className="lg:col-span-5">
           <p className="i18n-label text-xs font-bold uppercase tracking-[0.3em] text-accent-neon-purple">
-            {content.eyebrow}
+            <CjkText>{content.eyebrow}</CjkText>
           </p>
           <h2 className="mt-5 text-balance font-display text-4xl font-semibold leading-tight text-white md:text-6xl">
-            {content.title}
+            <CjkText>{content.title}</CjkText>
           </h2>
           <div className="mt-7 flex flex-wrap gap-3">
             {content.founders.map((founder) => (
@@ -25,15 +26,15 @@ export function FounderStorySection({ content }: FounderStorySectionProps) {
                 className="border border-accent-neon-cyan/30 bg-accent-neon-cyan/5 px-4 py-2 text-sm font-semibold text-accent-neon-cyan"
                 key={founder}
               >
-                {founder}
+                <CjkText>{founder}</CjkText>
               </span>
             ))}
           </div>
           <p className="mt-8 text-lg leading-8 text-report-muted">
-            {content.summary}
+            <CjkText>{content.summary}</CjkText>
           </p>
           <p className="mt-8 border-l-2 border-accent-neon-cyan pl-5 text-xl font-medium leading-8 text-white">
-            {content.promise}
+            <CjkText>{content.promise}</CjkText>
           </p>
         </MotionReveal>
 
@@ -50,7 +51,7 @@ export function FounderStorySection({ content }: FounderStorySectionProps) {
               <div className="absolute inset-0 bg-gradient-to-t from-dark-base via-dark-base/20 to-transparent" />
               <div className="absolute bottom-0 left-0 right-0 p-5 md:p-7">
                 <p className="max-w-xl text-balance text-xl font-semibold leading-7 text-white md:text-2xl">
-                  {content.imageOverlay}
+                  <CjkText>{content.imageOverlay}</CjkText>
                 </p>
               </div>
             </div>
@@ -61,10 +62,10 @@ export function FounderStorySection({ content }: FounderStorySectionProps) {
                   key={principle.title}
                 >
                   <p className="i18n-label text-xs font-bold uppercase tracking-[0.22em] text-accent-neon-cyan">
-                    {principle.title}
+                    <CjkText>{principle.title}</CjkText>
                   </p>
                   <p className="mt-3 text-sm leading-6 text-report-muted">
-                    {principle.body}
+                    <CjkText>{principle.body}</CjkText>
                   </p>
                 </article>
               ))}

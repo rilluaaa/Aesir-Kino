@@ -1,4 +1,5 @@
 import { FluidHeroBackground } from "@/components/FluidHeroBackground";
+import { CjkText } from "@/components/CjkText";
 import { MotionReveal } from "@/components/MotionReveal";
 import type { Language, SiteContent } from "@/lib/i18n";
 
@@ -27,7 +28,7 @@ export function HeroSection({ content, language }: HeroSectionProps) {
       >
         <MotionReveal immediate delay={0.32}>
           <p className="i18n-label mx-auto w-fit border border-white/10 bg-white/[0.03] px-4 py-2 text-xs font-bold uppercase tracking-[0.32em] text-accent-neon-cyan backdrop-blur-md">
-            {content.eyebrow}
+            <CjkText>{content.eyebrow}</CjkText>
           </p>
         </MotionReveal>
         <h1
@@ -41,7 +42,7 @@ export function HeroSection({ content, language }: HeroSectionProps) {
               key={`${segment}-${index}`}
               style={{ animationDelay: `${480 + index * 85}ms` }}
             >
-              {segment}{content.spacedSegments ? "\u00a0" : null}
+              <CjkText>{segment}</CjkText>{content.spacedSegments ? "\u00a0" : null}
             </span>
           ))}
         </h1>
@@ -56,7 +57,7 @@ export function HeroSection({ content, language }: HeroSectionProps) {
               key={`${segment}-${index}`}
               style={{ animationDelay: `${1150 + index * 22}ms` }}
             >
-              {segment}{content.spacedSegments ? "\u00a0" : null}
+              <CjkText>{segment}</CjkText>{content.spacedSegments ? "\u00a0" : null}
             </span>
           ))}
         </p>

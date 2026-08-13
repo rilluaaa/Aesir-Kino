@@ -41,7 +41,7 @@ export const simplifiedContent = {
     ]
   },
   impactMetricsSection: {
-    eyebrow: "Impact Analytics Layer",
+    eyebrow: "成效数据分析",
     title: "将一线活动转化为可量化指标。",
     description: "AESIR 在整个照护科技生态系统中，持续追踪覆盖范围、SEN 参与度、老年服务部署、训练参与情况，以及可观察的进展信号。",
     metrics: [

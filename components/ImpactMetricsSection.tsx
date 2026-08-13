@@ -1,4 +1,5 @@
 import { MotionReveal } from "@/components/MotionReveal";
+import { CjkText } from "@/components/CjkText";
 import { CountUpMetric } from "@/components/CountUpMetric";
 import type { SiteContent } from "@/lib/i18n";
 
@@ -12,13 +13,13 @@ export function ImpactMetricsSection({ content }: ImpactMetricsSectionProps) {
       <div className="mx-auto max-w-7xl">
         <MotionReveal className="mb-14 max-w-4xl">
           <p className="i18n-label text-xs font-bold uppercase tracking-[0.3em] text-accent-neon-cyan">
-            {content.eyebrow}
+            <CjkText>{content.eyebrow}</CjkText>
           </p>
           <h2 className="mt-5 text-balance text-4xl font-semibold leading-tight text-white md:text-6xl">
-            {content.title}
+            <CjkText>{content.title}</CjkText>
           </h2>
           <p className="mt-6 max-w-3xl text-lg leading-8 text-report-muted">
-            {content.description}
+            <CjkText>{content.description}</CjkText>
           </p>
         </MotionReveal>
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
@@ -29,7 +30,7 @@ export function ImpactMetricsSection({ content }: ImpactMetricsSectionProps) {
             >
               <article className="glass-panel min-h-64 p-6 shadow-glass-panel">
                 <p className="i18n-label text-xs font-bold uppercase tracking-[0.22em] text-white/45">
-                  {metric.domain}
+                  <CjkText>{metric.domain}</CjkText>
                 </p>
                 <CountUpMetric
                   className="text-gradient-neon mt-8 block font-display text-5xl font-semibold leading-none tabular-nums md:text-6xl"
@@ -37,7 +38,7 @@ export function ImpactMetricsSection({ content }: ImpactMetricsSectionProps) {
                   value={metric.value}
                 />
                 <p className="mt-6 text-xl font-semibold leading-8 text-white">
-                  {metric.label}
+                  <CjkText>{metric.label}</CjkText>
                 </p>
               </article>
             </MotionReveal>

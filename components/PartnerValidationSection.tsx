@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { CjkText } from "@/components/CjkText";
 import { withBasePath } from "@/lib/base-path";
 import { CountUpMetric } from "@/components/CountUpMetric";
 import { MotionReveal } from "@/components/MotionReveal";
@@ -15,13 +16,13 @@ export function PartnerValidationSection({ content }: PartnerValidationSectionPr
         <div className="grid gap-12 lg:grid-cols-12 lg:items-end">
           <MotionReveal className="lg:col-span-7">
             <p className="i18n-label text-xs font-bold uppercase tracking-[0.3em] text-accent-neon-cyan">
-              {content.eyebrow}
+              <CjkText>{content.eyebrow}</CjkText>
             </p>
             <h2 className="mt-5 max-w-4xl text-balance font-display text-4xl font-semibold leading-tight text-white md:text-6xl">
-              {content.title}
+              <CjkText>{content.title}</CjkText>
             </h2>
             <p className="mt-7 max-w-3xl text-lg leading-8 text-report-muted">
-              {content.body}
+              <CjkText>{content.body}</CjkText>
             </p>
           </MotionReveal>
 
@@ -35,7 +36,7 @@ export function PartnerValidationSection({ content }: PartnerValidationSectionPr
             />
             <div className="absolute inset-0 bg-gradient-to-t from-dark-base/90 via-dark-base/10 to-transparent" />
             <p className="absolute bottom-5 left-5 max-w-xs text-sm font-medium leading-6 text-white/85">
-              {content.imageOverlay}
+              <CjkText>{content.imageOverlay}</CjkText>
             </p>
           </MotionReveal>
         </div>
@@ -49,7 +50,7 @@ export function PartnerValidationSection({ content }: PartnerValidationSectionPr
                 value={proof.value}
               />
               <p className="mt-5 text-base font-semibold leading-7 text-white">
-                {proof.label}
+                <CjkText>{proof.label}</CjkText>
               </p>
             </MotionReveal>
           ))}
@@ -60,7 +61,7 @@ export function PartnerValidationSection({ content }: PartnerValidationSectionPr
             {content.network.map((partner, index) => (
               <p className="border-l border-accent-neon-purple pl-4 text-sm leading-6 text-white/70" key={partner}>
                 <span className="mr-2 font-display text-accent-neon-purple">0{index + 1}</span>
-                {partner}
+                <CjkText>{partner}</CjkText>
               </p>
             ))}
           </div>

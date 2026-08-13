@@ -34,10 +34,14 @@ html:not([data-language="en"]) body {
   font-family: "PingFang TC", "PingFang SC", "Noto Sans CJK TC", "Microsoft JhengHei", var(--font-body);
 }
 
-html[data-language="traditional"] body,
-html[data-language="simplified"] body {
-  text-spacing-trim: trim-all;
-  font-feature-settings: "halt" 1;
+.cjk-centered-comma {
+  display: inline-block;
+  width: 1em;
+  font-feature-settings: normal;
+  line-height: inherit;
+  transform: translate(0.12em, -0.18em);
+  transform-origin: center;
+  vertical-align: baseline;
 }
 
 html:not([data-language="en"]) .i18n-label {

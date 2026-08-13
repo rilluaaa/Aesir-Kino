@@ -1,4 +1,5 @@
 import { MotionReveal } from "@/components/MotionReveal";
+import { CjkText } from "@/components/CjkText";
 import type { SiteContent } from "@/lib/i18n";
 
 type CTASectionProps = {
@@ -11,13 +12,13 @@ export function CTASection({ content }: CTASectionProps) {
       <MotionReveal>
         <div className="glass-panel mx-auto max-w-5xl px-8 py-16 text-center shadow-glass-panel md:px-16">
           <p className="i18n-label text-xs font-bold uppercase tracking-[0.3em] text-accent-neon-cyan">
-            {content.eyebrow}
+            <CjkText>{content.eyebrow}</CjkText>
           </p>
           <h2 className="mx-auto mt-5 max-w-3xl text-balance text-4xl font-semibold leading-tight text-white md:text-6xl">
-            {content.title}
+            <CjkText>{content.title}</CjkText>
           </h2>
           <p className="mx-auto mt-6 max-w-2xl text-lg leading-8 text-report-muted">
-            {content.body}
+            <CjkText>{content.body}</CjkText>
           </p>
           <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
             <a
@@ -26,7 +27,7 @@ export function CTASection({ content }: CTASectionProps) {
               rel="noreferrer"
               className="i18n-label rounded-full bg-neon-button px-7 py-4 text-sm font-bold uppercase tracking-[0.18em] text-dark-base shadow-neon-cyan transition hover:scale-[1.02]"
             >
-              {content.primary}
+              <CjkText>{content.primary}</CjkText>
             </a>
             <a
               href="https://aesir.hk/#contactus"
@@ -34,7 +35,7 @@ export function CTASection({ content }: CTASectionProps) {
               rel="noreferrer"
               className="i18n-label rounded-full border border-white/12 px-7 py-4 text-sm font-bold uppercase tracking-[0.18em] text-white transition hover:border-accent-neon-cyan/70 hover:text-accent-neon-cyan"
             >
-              {content.secondary}
+              <CjkText>{content.secondary}</CjkText>
             </a>
           </div>
         </div>

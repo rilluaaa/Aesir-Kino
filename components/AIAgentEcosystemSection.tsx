@@ -1,4 +1,5 @@
 import { MotionReveal } from "@/components/MotionReveal";
+import { CjkText } from "@/components/CjkText";
 import type { SiteContent } from "@/lib/i18n";
 
 type AIAgentEcosystemSectionProps = {
@@ -16,14 +17,14 @@ export function AIAgentEcosystemSection({ content }: AIAgentEcosystemSectionProp
         <MotionReveal className="grid gap-8 lg:grid-cols-12 lg:items-end">
           <div className="lg:col-span-8">
             <p className="i18n-label text-xs font-bold uppercase tracking-[0.3em] text-accent-neon-cyan">
-              {content.eyebrow}
+              <CjkText>{content.eyebrow}</CjkText>
             </p>
             <h2 className="mt-5 max-w-5xl text-balance font-display text-4xl font-semibold leading-tight text-white md:text-6xl">
-              {content.title}
+              <CjkText>{content.title}</CjkText>
             </h2>
           </div>
           <p className="max-w-xl text-lg leading-8 text-report-muted lg:col-span-4 lg:pb-1">
-            {content.description}
+            <CjkText>{content.description}</CjkText>
           </p>
         </MotionReveal>
 
@@ -38,7 +39,7 @@ export function AIAgentEcosystemSection({ content }: AIAgentEcosystemSectionProp
                   <span className="text-xs font-bold tracking-[0.22em] text-accent-neon-purple">
                     0{index + 1}
                   </span>
-                  <p className="mt-4 text-xl font-semibold text-white">{step}</p>
+                  <p className="mt-4 text-xl font-semibold text-white"><CjkText>{step}</CjkText></p>
                 </div>
               ))}
             </div>
@@ -51,15 +52,15 @@ export function AIAgentEcosystemSection({ content }: AIAgentEcosystemSectionProp
               <article className="glass-panel min-h-72 p-6 shadow-glass-panel md:p-7">
                 <div className="flex items-center justify-between border-b border-white/10 pb-6">
                   <span className="i18n-label text-xs font-bold tracking-[0.22em] text-accent-neon-cyan">
-                    {content.capabilityLabel}
+                    <CjkText>{content.capabilityLabel}</CjkText>
                   </span>
                   <span className="font-display text-2xl text-white/35">0{index + 1}</span>
                 </div>
                 <h3 className="mt-8 text-2xl font-semibold leading-tight text-white">
-                  {capability.title}
+                  <CjkText>{capability.title}</CjkText>
                 </h3>
                 <p className="mt-5 text-base leading-7 text-report-muted">
-                  {capability.body}
+                  <CjkText>{capability.body}</CjkText>
                 </p>
               </article>
             </MotionReveal>
@@ -68,13 +69,13 @@ export function AIAgentEcosystemSection({ content }: AIAgentEcosystemSectionProp
 
         <MotionReveal className="mt-14 border-t border-white/10 pt-6" delay={0.12}>
           <p className="i18n-label text-xs font-bold uppercase tracking-[0.24em] text-white/45">
-            {content.foundationLabel}
+            <CjkText>{content.foundationLabel}</CjkText>
           </p>
           <div className="mt-5 grid gap-x-8 gap-y-4 md:grid-cols-3">
             {content.foundations.map((foundation, index) => (
               <p className="border-l border-accent-neon-cyan/70 pl-4 text-sm leading-6 text-white/70" key={foundation}>
                 <span className="mr-2 font-display text-accent-neon-cyan">0{index + 1}</span>
-                {foundation}
+                <CjkText>{foundation}</CjkText>
               </p>
             ))}
           </div>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, type KeyboardEvent } from "react";
+import { CjkText } from "@/components/CjkText";
 import { useLanguage } from "@/components/LanguageProvider";
 import { languageNames, languages, type Language } from "@/lib/i18n";
 
@@ -93,7 +94,7 @@ export function LanguageSwitcher() {
         ref={triggerRef}
         type="button"
       >
-        <span>{content.languageSelector.compact}</span>
+        <span><CjkText>{content.languageSelector.compact}</CjkText></span>
         <span aria-hidden="true" className="language-switcher__chevron">▾</span>
       </button>
 
@@ -117,7 +118,7 @@ export function LanguageSwitcher() {
               role="menuitemradio"
               type="button"
             >
-              <span>{languageNames[option]}</span>
+              <span><CjkText>{languageNames[option]}</CjkText></span>
               <span aria-hidden="true" className="language-switcher__check">
                 {option === language ? "●" : ""}
               </span>

@@ -1,4 +1,5 @@
 import { MotionReveal } from "@/components/MotionReveal";
+import { CjkText } from "@/components/CjkText";
 import type { SiteContent } from "@/lib/i18n";
 
 type TargetStatusSectionProps = {
@@ -11,10 +12,10 @@ export function TargetStatusSection({ content }: TargetStatusSectionProps) {
       <div className="mx-auto max-w-7xl">
         <MotionReveal className="mb-14 max-w-4xl">
           <p className="i18n-label text-xs font-bold uppercase tracking-[0.3em] text-accent-neon-purple">
-            {content.eyebrow}
+            <CjkText>{content.eyebrow}</CjkText>
           </p>
           <h2 className="mt-5 text-balance text-4xl font-semibold leading-tight text-white md:text-6xl">
-            {content.title}
+            <CjkText>{content.title}</CjkText>
           </h2>
         </MotionReveal>
         <div className="grid gap-5 lg:grid-cols-2">
@@ -22,10 +23,10 @@ export function TargetStatusSection({ content }: TargetStatusSectionProps) {
             <MotionReveal delay={index * 0.08} key={status.title}>
               <article className="glass-panel p-7 shadow-glass-panel md:p-9">
                 <h3 className="text-3xl font-semibold text-white">
-                  {status.title}
+                  <CjkText>{status.title}</CjkText>
                 </h3>
                 <p className="mt-5 text-lg leading-8 text-report-muted">
-                  {status.summary}
+                  <CjkText>{status.summary}</CjkText>
                 </p>
                 <div className="mt-8 grid gap-4">
                   {status.points.map((point) => (
@@ -34,10 +35,10 @@ export function TargetStatusSection({ content }: TargetStatusSectionProps) {
                       key={`${status.title}-${point.label}`}
                     >
                       <p className="i18n-label text-xs font-bold uppercase tracking-[0.22em] text-accent-neon-cyan">
-                        {point.label}
+                        <CjkText>{point.label}</CjkText>
                       </p>
                       <p className="mt-3 text-base leading-7 text-report-muted">
-                        {point.body}
+                        <CjkText>{point.body}</CjkText>
                       </p>
                     </div>
                   ))}

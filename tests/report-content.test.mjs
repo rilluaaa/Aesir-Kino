@@ -20,6 +20,7 @@ const aiAgentEcosystemPath = new URL("../components/AIAgentEcosystemSection.tsx"
 const roadmapPath = new URL("../components/RoadmapSection.tsx", import.meta.url);
 const globalsPath = new URL("../app/globals.css", import.meta.url);
 const chapterDeckPath = new URL("../components/ChapterDeck.tsx", import.meta.url);
+const cjkTextPath = new URL("../components/CjkText.tsx", import.meta.url);
 
 function assertFileExists(path) {
   return new Promise((resolve, reject) => {
@@ -71,7 +72,7 @@ test("uses the final approved Chinese copy and Impact Analytics terminology", as
     "為照護團隊，NGO 及合作夥伴而設的數據層。",
     "AESIR 將前線學習與復康活動轉化為可量化的觸及範圍，參與度及成效指標。",
     "成效分析",
-    "Impact Analytics Layer",
+    "成效數據分析",
     "關鍵是研究",
     "AI代理生態系統",
     "一個旨在擴大公共價值的社會企業模式。",
@@ -87,7 +88,7 @@ test("uses the final approved Chinese copy and Impact Analytics terminology", as
     "为照护团队，NGO 及合作伙伴而设的数据层。",
     "AESIR 将一线学习与康复活动转化为可量化的覆盖范围，参与度及成效指标。",
     "成效分析",
-    "Impact Analytics Layer",
+    "成效数据分析",
     "关键是研究",
     "AI代理生态系统",
     "一个旨在扩大公共价值的社会企业模式。",
@@ -123,15 +124,27 @@ test("uses the final approved Chinese copy and Impact Analytics terminology", as
   assert.doesNotMatch(simplified, /[，。：；！？、]\s/);
 });
 
-test("applies compact CJK punctuation typography only to Chinese language modes", async () => {
-  const styles = await readFile(globalsPath, "utf8");
-  const compactCjkRule = styles.match(
-    /html\[data-language="traditional"\] body,\s*html\[data-language="simplified"\] body\s*\{([\s\S]*?)\}/
-  )?.[1] ?? "";
+test("centres full-width Chinese commas without changing English punctuation", async () => {
+  const [styles, formatter, english, traditional, simplified] = await Promise.all([
+    readFile(globalsPath, "utf8"),
+    readFile(cjkTextPath, "utf8"),
+    readFile(contentPath, "utf8"),
+    readFile(traditionalContentPath, "utf8"),
+    readFile(simplifiedContentPath, "utf8")
+  ]);
 
-  assert.match(compactCjkRule, /text-spacing-trim:\s*trim-all;/);
-  assert.match(compactCjkRule, /font-feature-settings:\s*"halt" 1;/);
-  assert.doesNotMatch(styles, /html\[data-language="en"\] body[\s\S]*?text-spacing-trim/);
+  assert.match(formatter, /language === "en"/);
+  assert.match(formatter, /children\.split\("，"\)/);
+  assert.match(formatter, /className="cjk-centered-comma">，<\/span>/);
+  assert.doesNotMatch(formatter, /aria-hidden/);
+  assert.match(styles, /\.cjk-centered-comma\s*\{[\s\S]*?width:\s*1em;/);
+  assert.match(styles, /\.cjk-centered-comma\s*\{[\s\S]*?font-feature-settings:\s*normal;/);
+  assert.match(styles, /\.cjk-centered-comma\s*\{[\s\S]*?transform:\s*translate\(0\.12em, -0\.18em\);/);
+  assert.doesNotMatch(styles, /text-spacing-trim:\s*trim-all/);
+  assert.doesNotMatch(styles, /font-feature-settings:\s*"halt" 1/);
+  assert.match(english, /eyebrow: "Impact Analytics Layer"/);
+  assert.match(traditional, /eyebrow: "成效數據分析"/);
+  assert.match(simplified, /eyebrow: "成效数据分析"/);
 });
 
 test("uses unique impact photography across report content and category sections", async () => {

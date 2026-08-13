@@ -41,7 +41,7 @@ export const traditionalContent = {
     ]
   },
   impactMetricsSection: {
-    eyebrow: "Impact Analytics Layer",
+    eyebrow: "成效數據分析",
     title: "將前線活動轉化為可量化指標。",
     description: "AESIR 在整個照護科技生態系統中，持續追蹤觸及範圍、SEN 參與度、長者服務部署、訓練參與情況，以及可觀察的進展訊號。",
     metrics: [
